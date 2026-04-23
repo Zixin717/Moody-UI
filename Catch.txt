@@ -1,0 +1,96 @@
+MainLayout.jsx
+-> 主切版設計
+
+mockEntries.js 
+-> 假日記資料
+
+StarLifecycleCanvas.jsx 
+負責 Idle -> Explode -> Collapse 粒子動畫，使用 Canvas
+
+InteractiveGalaxy.jsx
+-> 負責坍縮完成後的太陽系橢圓展示與點擊，使用 CSS 3D，基於原本的 code 改良。
+
+HomePage.jsx
+-> 大廳，負責排版、導覽列、主題切換與控制動畫流程
+
+VerifyPage.jsx
+-> 更改密碼時跳出的驗證頁
+
+
+
+
+
+
+
+
+備份：
+{/* 透明遮罩 */}
+      {/* {openMenu && <div className="fixed inset-0 z-40" onClick={() => setOpenMenu(null)} />} */}
+
+      {/* ===== 頂層列表 (Top_Bar)  ===== */}
+      {/* <header className="relative z-50 bg-moOlive border-b border-moBlack text-white flex items-center justify-between px-8 py-4 mb-3 flex-shrink-0"> */}
+        
+        {/* Logo */}
+        {/* <Link to="/home" className="text-[30px] text-moBlack font-bold font-serif cursor-pointer hover:text-moCitron transition-colors">
+          Moody
+        </Link> */}
+
+        {/* 搜尋列 */}
+        {/* <div className="relative">
+          <div className="flex items-center bg-white border border-moBlack focus-within:border-[#A1A34E] focus-within:ring-4 focus-within:ring-[#A1A34E]/20 transition-all rounded-full px-5 py-2 w-[700px] h-[50px] shadow-sm">
+            <Icon name="moon" size={18} color="#9ca3af" />
+            <input
+              type="text"
+              placeholder="How can we support you?"
+              className="ml-3 outline-none w-full text-sm bg-transparent placeholder-gray-400 text-gray-700"
+              onClick={() => setOpenMenu('search')}
+            />
+          </div>
+          
+        </div> */}
+
+        {/* 右側：通知 + 頭貼 (通知欄位保留！) */}
+        {/* <div className="flex gap-4"> */}
+          
+          {/* 通知按鈕
+          <div className="relative">
+            <button 
+              onClick={() => setOpenMenu(openMenu === 'notif' ? null : 'notif')}
+              className="w-10 h-10 flex items-center justify-center text-gray-400 hover:text-moOlive rounded-full bg-white border border-moBlack shadow-sm transition-colors relative"
+            >
+              <Icon name="star" size={18} color="currentColor"/>
+              <span className="absolute top-0 right-0 w-3 h-3 bg-red-400 border border-white rounded-full"></span>
+            </button>
+            {openMenu === 'notif' && (
+              <div className="absolute top-[50px] right-0 w-64 bg-[#FDFBF7] border border-moBlack rounded-xl shadow-lg p-2 z-50">
+                <p className="text-xs text-gray-400 font-bold px-4 py-2">Recent</p>
+                <ul className="flex flex-col gap-1">
+                  {notifications.map(notif => (
+                    <li key={notif.id}>
+                      <Link to="/" className={`block px-4 py-3 rounded-lg text-sm border transition-all ${notif.unread ? 'bg-[#D4E2A5]/30 border-[#A1A34E]/50 font-bold text-gray-800' : 'bg-transparent border-transparent text-gray-600 hover:bg-gray-100'}`}>
+                        {notif.unread ? '● ' : '○ '}{notif.text}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </div> */}
+
+          {/* 頭貼按鈕
+          <div className="relative">
+            <button 
+              onClick={() => setOpenMenu(openMenu === 'profile' ? null : 'profile')}
+              className="w-10 h-10 flex items-center justify-center text-gray-400 hover:text-moOlive rounded-full bg-white border border-moBlack shadow-sm transition-colors"
+            >
+              <Icon name="user" size={18} color="currentColor"/>
+            </button>
+            {openMenu === 'profile' && (
+              <div className="absolute top-[50px] right-0 w-48 bg-[#FDFBF7] border border-moBlack rounded-xl shadow-lg py-2 z-50">
+                <Link to="/profile" className="block px-6 py-3 text-sm text-gray-700 bg-moAzure/20 text-[#3d5a10] font-bold">帳戶</Link>
+                <Link to="/" className="block px-6 py-2 text-sm text-gray-600 hover:bg-gray-100 transition-colors">登出</Link>
+              </div>
+            )}
+          </div>
+        </div> 
+      </header> */}
