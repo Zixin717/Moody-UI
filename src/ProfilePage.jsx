@@ -55,7 +55,7 @@ const ProfilePage = () => {
               {/* 展開後的內容 */}
               {openSections.account && (
                 <div className="flex flex-col gap-5">                  
-                  {/* E-mail (編輯動態：黑色變 moAzure 藍) */}
+                  {/* E-mail */}
                   <label className="block group cursor-text">
                     <span className="block text-sm font-bold text-moBrown/80 mb-2">E-mail</span>
                     <div className="flex items-center justify-between bg-white border border-moBlack rounded-xl px-4 py-3 transition-colors focus-within:border-moAzure hover:border-moAzure group cursor-pointer">
