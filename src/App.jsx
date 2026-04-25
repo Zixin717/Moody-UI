@@ -22,7 +22,6 @@ import AnalyzePage from './AnalyzePage'; // 分析頁 -> 把朝弼的心血 impo
 
 function App() {
   return (
-    // Routes 像電梯的按鈕面板，裡面裝滿了 Route (按鈕)
     <Routes>
       {/* LandingPage (登入預備頁) */}
       <Route path="/" element={<LandingPage />} />
@@ -55,7 +54,7 @@ function App() {
       {/* 朝弼的心血 -> AnalyzePage (分析頁) */}
       <Route path="/analyze" element={<AnalyzePage />} />
 
-      {/* 升級 2：對於還沒建檔案的頁面 (例如月曆、聊天)，我們先隨便導向一個現有的頁面，或者寫一個行內假畫面，防止白畫面死機！ */}
+      {/* 隨意導向一個現有的頁面，或者寫一個行內假畫面，防止白畫面死機。 */}
       <Route path="/calendar" element={
         <div className="h-screen flex items-center justify-center text-2xl font-serif text-moBrown bg-moCream">
           月曆頁面施工中...
