@@ -201,7 +201,9 @@ const MainLayout = ({ children }) => {
                             {openMenu === 'profile' && (
                             <div className="absolute top-[50px] right-0 w-48 bg-white border border-moBlack rounded-xl shadow-lg py-2 z-50">
                                 <Link to="/profile" className="block px-6 py-2 text-sm text-gray-600 hover:bg-gray-100 transition-colors">帳戶</Link>
-                                <Link to="/profile/personal" className="block px-6 py-2 text-sm text-gray-600 hover:bg-gray-100 transition-colors">個人檔案</Link>
+                                <Link to="/profile" className="block px-6 py-2 text-sm text-gray-600 hover:bg-gray-100 transition-colors">系統設定</Link>
+
+                                {/* <Link to="/profile/personal" className="block px-6 py-2 text-sm text-gray-600 hover:bg-gray-100 transition-colors">個人檔案</Link> */}
                                 <div className="border-t border-gray-200 my-1"></div>
                                 <Link to="/" className="block px-6 py-2 text-sm text-gray-600 hover:bg-red-50 hover:text-red-500 transition-colors">登出</Link>
                             </div>

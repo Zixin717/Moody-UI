@@ -54,14 +54,27 @@ const ProfilePage = () => {
 
               {/* 展開後的內容 */}
               {openSections.account && (
-                <div className="flex flex-col gap-5">                  
+                <div className="flex flex-col gap-5">
+
+                  {/* Nickname */}
+                  <label className="block group cursor-text">
+                    <span className="block text-sm font-bold text-moBrown/80 mb-2">Nickname</span>
+                    <div className="flex items-center justify-between bg-white border border-moBlack rounded-xl px-4 py-3 transition-colors focus-within:border-moAzure hover:border-moAzure group cursor-pointer">
+                      <div className="flex items-center gap-3 w-full">
+                        <div className="text-moOlive"><Icon name="user" size={20} color="currentColor" /></div>
+                        <input type="text" defaultValue="" className="w-full outline-none text-gray-700 font-medium bg-transparent" />
+                      </div>
+                      <span className="text-sm font-bold text-gray-400 group-focus-within:text-moAzure transition-colors">Edit</span>
+                    </div>
+                  </label>
+
                   {/* E-mail */}
                   <label className="block group cursor-text">
                     <span className="block text-sm font-bold text-moBrown/80 mb-2">E-mail</span>
                     <div className="flex items-center justify-between bg-white border border-moBlack rounded-xl px-4 py-3 transition-colors focus-within:border-moAzure hover:border-moAzure group cursor-pointer">
                       <div className="flex items-center gap-3 w-full">
                         <div className="text-moOlive"><Icon name="mail" size={20} color="currentColor" /></div>
-                        <input type="email" defaultValue="Test_@gmail.com" className="w-full outline-none text-gray-700 font-medium bg-transparent" />
+                        <input type="email" defaultValue="" className="w-full outline-none text-gray-700 font-medium bg-transparent" />
                       </div>
                       <span className="text-sm font-bold text-gray-400 group-focus-within:text-moAzure transition-colors">Edit</span>
                     </div>
@@ -78,6 +91,18 @@ const ProfilePage = () => {
                       <span className="text-sm font-bold text-gray-400 group-hover:text-moAzure transition-colors">Edit</span>
                     </Link>
                   </div>
+
+                  {/* Phone */}
+                  <label className="block group cursor-text">
+                    <span className="block text-sm font-bold text-moBrown/80 mb-2">Phone</span>
+                    <div className="flex items-center justify-between bg-white border border-moBlack rounded-xl px-4 py-3 transition-colors focus-within:border-moAzure hover:border-moAzure group cursor-pointer">
+                      <div className="flex items-center gap-3 w-full">
+                        <div className="text-moOlive"><Icon name="bell" size={20} color="currentColor" /></div>
+                        <input type="tel" defaultValue="" className="w-full outline-none text-gray-700 font-medium bg-transparent" />
+                      </div>
+                      <span className="text-sm font-bold text-gray-400 group-focus-within:text-moAzure transition-colors">Edit</span>
+                    </div>
+                  </label>
 
                   {/* Birthday */}
                   <label className="block group cursor-pointer">

@@ -29,7 +29,7 @@ const RegisterPage = () => {
     
     try {
       // 向 C# API 發送 POST 請求
-      // ※ 注意：7247 要換成我自己後端終端機顯示的 Port 號
+      // ※ 注意：要換成我自己後端終端機顯示的 Port 號 -> 目前維持 7247
       const response = await fetch('https://localhost:7247/api/user/register', {
         method: 'POST',
         headers: {
@@ -66,7 +66,7 @@ const RegisterPage = () => {
         
         {/* 左上角 Logo 回首頁 */}
         <div className="absolute top-6 left-8">
-          <Link to="/home" className="text-[30px] text-moBlack font-bold font-serif hover:text-moOlive transition">Moody</Link>
+          <Link to="/" className="text-[30px] text-moBlack font-bold font-serif hover:text-moOlive transition">Moody</Link>
         </div>
 
         {/* 註冊卡片 */}

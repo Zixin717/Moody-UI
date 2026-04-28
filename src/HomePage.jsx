@@ -28,23 +28,32 @@ const HomePage = () => {
   //   }
   // };
 
-    // /* ===== 頂層列動態效果 ===== */
-    // // 1. 記錄目前打開的是哪個選單 -> 'search', 'notif', 'profile' 或是 null 代表全關。
-    // const [openMenu, setOpenMenu] = useState(null);
+  
+  /* ===== 心情表達邏輯 ===== */
+  // 算本週 (日~六) 的日期陣列
+  const today = new Date();
+  const currentDayOfWeek = today.getDay(); // 取得今天是禮拜幾 (0是週日，6是週六)
+  
+  // 算本週「禮拜日」是哪一天
+  const startOfWeek = new Date(today);
+  startOfWeek.setDate(today.getDate() - currentDayOfWeek);
 
-    // // 2. 測試 -> 搜尋列的假資料
-    // const recentSearches = [
-    //   { id: 1, text: "Rain on me", date: "2027 / 7 / 1", type: "moon" },
-    //   { id: 2, text: "Flower", date: "2027 / 7 / 2", type: "sparkle" },
-    //   { id: 3, text: "Ocean", date: "2027 / 7 / 2", type: "moon" },
-    // ];
-
-    // // 3. 測試 -> 通知假資料（unread 代表是否有新通知的紅點）
-    // const notifications = [
-    //   { id: 1, text: "Max likes your post!", unread: true },
-    //   { id: 2, text: "New Update!", unread: false },
-    //   { id: 3, text: "Remember drinking", unread: false },
-    // ];
+  // 產生 7 天的完整資料
+  const weekDays = Array(7).fill(null).map((_, index) => {
+    const date = new Date(startOfWeek);
+    date.setDate(startOfWeek.getDate() + index);
+    
+    // 格式化日期，例如 "2026/04/26"
+    const dateString = `${date.getFullYear()}/${String(date.getMonth() + 1).padStart(2, '0')}/${String(date.getDate()).padStart(2, '0')}`;
+    
+    // TODO: 未來這裡要改成去檢查資料庫
+    // 1. 看這天有沒有寫日記？
+    // 2. 是什麼心情？
+    // 目前因為是全新帳號，一律預設為 'empty'
+    const mood = 'empty'; 
+    
+    return { date: dateString, mood: mood, dayOfWeek: index };
+  });
     
 
     /* ===== 音樂撥放器邏輯 ===== */
@@ -172,14 +181,15 @@ const HomePage = () => {
 
               {/* 習慣清單 */}
               <ul className="space-y-4 flex-1">
-                <li className="flex items-center gap-3 text-sm font-medium text-moBrown">
+                <li className="text-sm font-medium text-gray-400 text-center mt-4">尚未新增任何習慣</li>
+                {/* <li className="flex items-center gap-3 text-sm font-medium text-moBrown">
                   <Icon name="check" size={18} color="#A1A34E" /> Drink Water
                 </li>
                 <li className="flex items-center gap-3 text-sm font-medium text-moBrown">
                   <Icon name="check" size={18} color="#A1A34E" /> Exercise
-                </li>
+                </li> */}
                 {/* 這行加了底線分隔 */}
-                <li className="flex items-center gap-3 text-sm font-medium text-moBrown border-b border-[#E8E9DF] pb-4 mb-2">
+                {/* <li className="flex items-center gap-3 text-sm font-medium text-moBrown border-b border-[#E8E9DF] pb-4 mb-2">
                   <Icon name="check" size={18} color="#A1A34E" /> Sleep 8 hr
                 </li>
                 <li className="flex items-center gap-3 text-sm font-medium text-moBrown">
@@ -187,7 +197,7 @@ const HomePage = () => {
                 </li>
                 <li className="flex items-center gap-3 text-sm font-medium text-moBrown">
                   <Icon name="square" size={18} /> Presentation
-                </li>
+                </li> */}
               </ul>
 
               {/* 習慣按鈕 */}
@@ -208,7 +218,7 @@ const HomePage = () => {
         {/* － Block 3 主視覺（Middle） － */}
         <main className="border border-moBlack rounded-2xl flex-1 flex justify-center items-center py-4 overflow-hidden relative bg-[#FDFBF7] shadow-sm">            
             <div className="w-full h-full relative">
-               <InteractiveGalaxy diaries={mockEntries} />
+               <InteractiveGalaxy diaries={[]} />
             </div>
         </main>
 
@@ -218,26 +228,27 @@ const HomePage = () => {
         {/* 4-1 今日狀態 */}
         <div className="flex-1 bg-moCream/80 rounded-[2rem] border border-moBlack p-6 shadow-sm flex flex-col">
           <h3 className="text-2xl font-black font-serif text-moBlack mb-1">Today</h3>
-          <p className="text-xs text-moBrown/60 mb-6 font-medium">Feel safe and thankful!</p>
+          {/* 預設的鼓勵小語 */}
+          <p className="text-xs text-moBrown/60 mb-6 font-medium">Ready to write your first journal!</p>
           
-          <div className="flex justify-between text-xs font-bold text-moBrown/80 mb-4">
-            <span className="bg-moOlive text-white py-1 px-3 rounded-full">平靜</span>
-            <span className="bg-moOlive text-white py-1 px-3 rounded-full">晴天</span>
-            <span className="bg-moOlive text-white py-1 px-3 rounded-full">運動</span>
+          {/* 空白狀態的標籤 */}
+          <div className="flex justify-start gap-2 text-xs font-bold text-moBrown/50 mb-4">
+            <span className="bg-white border border-moBrown/20 py-1 px-3 rounded-full">尚未記錄標籤</span>
           </div>
 
           <div className="space-y-4">
-            {[{label:"Mood", done:4, total:5},
-              {label:"Sleep", done:3, total:5},
-              {label:"Stress", done:1, total:5}].map(a => (
+            {/* 把 done 全部設為 0 */}
+            {[{label:"Mood", done:0, total:5},
+              {label:"Sleep", done:0, total:5},
+              {label:"Stress", done:0, total:5}].map(a => (
               <div key={a.label}>
                 <div className="flex justify-between text-xs font-bold text-moBrown/80 mb-2">
                   <span>{a.label}</span>
                   <span>{a.done}/{a.total}</span>
                 </div>
-                {/* 進度條底色 (淺色) */}
+                {/* 進度條底色 */}
                 <div className="h-2 bg-moBrown/10 rounded-full overflow-hidden border border-moBrown/20">
-                  {/* 進度條進度 (橄欖綠) */}
+                  {/* 進度條進度：因為 done 都是 0，所以一開始會是全空的 */}
                   <div 
                     className="h-full bg-moOlive rounded-full transition-all duration-500"
                     style={{ width: `${(a.done/a.total)*100}%` }} 
@@ -253,30 +264,29 @@ const HomePage = () => {
           <p className="text-sm font-bold text-moBrown mb-3 px-2">Mood</p>
           
           <div className="flex justify-between items-center px-2">
-            {/*  1. 陣列裡改成你 public 資料夾裡 emoji_ 後面的單字！ */}
-            {/* 假設 'empty' 代表那天還沒寫日記 */}
-            {['happy', 'peace', 'relax', 'empty', 'excited', 'touched', 'empty'].map((moodStatus, index) => (
+            {/* 用算好的 weekDays 陣列來跑迴圈 */}
+            {weekDays.map((day, index) => (
               <span 
                 key={index} 
+                title={day.date} // 滑鼠移過去會顯示日期
+                // 點擊後，帶著日期跳轉到寫日記的頁面
+                onClick={() => navigate(`/diary/new?date=${day.date}`)}
                 className="cursor-pointer transition-transform hover:scale-125 duration-300"
               >
-                {/* 2. 判斷邏輯：有寫日記 vs 沒寫日記 */}
-                {moodStatus === 'empty' ? (
-                  // 如果是 empty，就顯示原本的空心圓圈 (或是你可以自己畫一個 emoji_empty.svg 放進去)
+                {day.mood === 'empty' ? (
+                  // 空白狀態的圈圈
                   <div className="text-gray-300 hover:text-moOlive transition-colors">
                     <Icon name="circleOutline" size={20} color="currentColor" />
                   </div>
                 ) : (
-                  // 如果有心情，就用 <img> 標籤去 public 抓圖片！
-                  // 路徑寫法：`/emoji_happy.svg`
+                  // 有心情狀態的圖片
                   <img 
-                    src={`/emoji_${moodStatus}.svg`} 
-                    alt={`Mood: ${moodStatus}`} 
+                    src={`/emoji_${day.mood}.svg`} 
+                    alt={`Mood: ${day.mood}`} 
                     className="w-8 h-8 opacity-80 hover:opacity-100 transition-opacity" 
                   />
                 )}
               </span>
-              
             ))}
           </div>
         </div>
