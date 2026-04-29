@@ -1,6 +1,6 @@
 // src/MainLayout.jsx
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { Link, NavLink } from 'react-router-dom';
+import { Link, NavLink, useNavigate } from 'react-router-dom';
 import Icon from './Icon'; // 全域 Icon
 
 
@@ -148,6 +148,8 @@ const ClickSpark = ({
 // ({ children }) ->  React 核心概念，代表包在這個元件裡面的內容。
 const MainLayout = ({ children }) => {
   const [openMenu, setOpenMenu] = useState(null);
+  const navigate = useNavigate(); // 宣告 navigate 才能實現登出跳頁，不要再忘記了。
+
 
   // 主題切換功能（優先級 3 -> 暫不處理 尚未建置此功能，勿動。）
   const toggleTheme = () => {
@@ -159,6 +161,19 @@ const MainLayout = ({ children }) => {
       root.classList.add('dark');
       localStorage.setItem('theme', 'dark');
     }
+  };
+
+  // 登出功能處理函式
+  const handleLogout = () => {
+    // Step A：清空瀏覽器裡儲存的用戶資料
+    localStorage.removeItem('userData');
+    
+    // Step B：關閉選單
+    setOpenMenu(null);
+    
+    // Step C：跳出提示並導回登入頁面
+    alert("已成功登出！");
+    navigate('/login'); 
   };
 
   return (
@@ -205,8 +220,13 @@ const MainLayout = ({ children }) => {
 
                                 {/* <Link to="/profile/personal" className="block px-6 py-2 text-sm text-gray-600 hover:bg-gray-100 transition-colors">個人檔案</Link> */}
                                 <div className="border-t border-gray-200 my-1"></div>
-                                <Link to="/" className="block px-6 py-2 text-sm text-gray-600 hover:bg-red-50 hover:text-red-500 transition-colors">登出</Link>
-                            </div>
+                                    <button 
+                                      onClick={handleLogout} 
+                                      className="w-full text-left block px-6 py-2 text-sm text-gray-600 hover:bg-red-50 hover:text-red-500 transition-colors"
+                                    >
+                                      登出
+                                    </button>                            
+                                </div>
                             )}
                         </div>
                     </div> 
