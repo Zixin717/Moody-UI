@@ -13,8 +13,10 @@ const VerifyPage = () => {
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
-  // 測試：假設目前的登入使用者 ID，實務上通常從 localStorage 或 Context 取出)
-  const currentUserId = 1; 
+  // localStorage 取出 UserId（這個 ID 是在登入時存進去的）
+  // 動態去保險箱拿出剛剛登入的 ID
+  // 如果找不到（代表沒登入），就給個預設值或是把用戶踢回登入頁。
+  const currentUserId = localStorage.getItem('currentUserId');
 
   // ==========================================
   // Step 1: 驗證舊密碼 (打給 C# 後端)
@@ -29,7 +31,7 @@ const VerifyPage = () => {
     try {
       // 向 C# 後端發送驗證請求
       // 注意：這裡的 URL 取決於組員 C# API 的路由設計
-      const response = await fetch('https://localhost:7247/api/Auth/VerifyPassword', {
+      const response = await fetch('https://localhost:7247/api/User/verify-password', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
@@ -66,7 +68,7 @@ const VerifyPage = () => {
 
     try {
       // 向 C# 後端發送變更密碼請求
-      const response = await fetch('https://localhost:7247/api/Auth/ChangePassword', {
+      const response = await fetch('https://localhost:7247/api/User/change-password', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 

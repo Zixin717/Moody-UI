@@ -66,7 +66,7 @@ const RegisterPage = () => {
         
         {/* 左上角 Logo 回首頁 */}
         <div className="absolute top-6 left-8">
-          <Link to="/" className="text-[30px] text-moBlack font-bold font-serif hover:text-moOlive transition">Moody</Link>
+          <Link to="/" className="text-[30px] text-moBlack font-bold font-serif hover:text-moAzure transition">Moody</Link>
         </div>
 
         {/* 註冊卡片 */}

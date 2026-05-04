@@ -33,8 +33,10 @@ const LoginPage = () => {
         
         // 注意：把用戶資料存進瀏覽器的 localStorage  
         // 這樣別的頁面 (Home, Profile) 就能拿到這個人的資料了
-        localStorage.setItem('userData', JSON.stringify(data.user));
-        
+        localStorage.setItem('userData', JSON.stringify(data.user)); // 給個人資料頁用
+        localStorage.setItem('currentUserId', data.user.id);         // 給驗證密碼頁用
+        localStorage.setItem('currentUserName', data.user.nickname); // 順便存名字
+
         navigate('/home');
       } else {
         alert("信箱或密碼錯誤！請再試一次。");
