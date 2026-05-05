@@ -15,8 +15,6 @@ export default {
         moBlack: '#000000',  // 純黑   -> 強調邊框      -> 增加對比
         moAzure: '#007FFF',  // 天空藍 -> 系統選取用色   -> 功能明確
         moCitron: '#D4E2A5', // 淺綠   -> Moody 綠 -> Logo、按鈕 Hover -> 品牌識別
-        // moLemon: '#FAFFB8',  // 暖黃色 -> 搜尋下拉 Hover
-// #FDFBF7
       }
     },
   },

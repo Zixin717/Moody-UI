@@ -201,14 +201,50 @@ const MainLayout = ({ children }) => {
                         </div>
                     </div>
 
-                    {/* 1-2 通知 + 頭貼 */}
+                    {/* 1-2 通知＆帳號 */}
                     <div className="flex gap-4">
+                        {/* 通知＆下拉選單 */}
                         <div className="relative">
                             <button onClick={() => setOpenMenu(openMenu === 'notif' ? null : 'notif')} className="w-10 h-10 flex items-center justify-center text-gray-400 hover:text-moOlive rounded-full bg-white border border-moBlack shadow-sm transition-colors relative">
                             <Icon name="bell" size={18} color="currentColor"/>
                             <span className="absolute top-0 right-0 w-3 h-3 bg-red-400 border border-white rounded-full"></span>
                             </button>
+
+                            {openMenu === 'notif' && (
+                              <div className="absolute top-[50px] right-0 w-80 bg-white border border-moBlack rounded-2xl shadow-lg py-4 px-4 z-50 animate-fade-in origin-top-right">
+                                
+                                {/* 標題與全部已讀按鈕 */}
+                                <div className="flex justify-between items-center mb-3 border-b border-gray-100 pb-2">
+                                  <span className="font-bold text-moBrown font-serif text-lg">Recent</span>
+                                  <button className="text-xs text-gray-400 hover:text-moOlive font-bold transition-colors">
+                                    Read all
+                                  </button>
+                                </div>
+
+                                {/* 內部通知列表：預設為空畫面 */}
+                                <div className="flex flex-col items-center justify-center py-8">
+                                  {/* 這裡可以用妳的 Icon 元件，放個淡淡的鈴鐺或星星 */}
+                                  <div className="text-gray-200 mb-2">
+                                    <Icon name="bell" size={40} color="currentColor" />
+                                  </div>
+                                  <p className="text-sm font-bold text-gray-400">目前沒有新通知</p>
+                                  <p className="text-xs text-gray-400 mt-1">去主星系添加今日星球吧！</p>
+                                </div>
+                                
+                                {/* 如果未來有資料，就會用 .map() 產生下面這樣的卡片 (先註解) */}
+                                {/*
+                                <div className="flex flex-col gap-2 mt-2">
+                                  <div className="bg-[#D4E2A5]/30 border border-moBlack rounded-xl p-3 flex items-center gap-3">
+                                    <span className="w-2 h-2 rounded-full bg-moOlive"></span>
+                                    <span className="text-sm font-bold text-moBrown">Max likes your post!</span>
+                                  </div>
+                                </div> 
+                                 */}
+                              </div>
+                            )}
                         </div>
+
+                        {/* 帳號＆下拉選單 */}
                         <div className="relative">
                             <button onClick={() => setOpenMenu(openMenu === 'profile' ? null : 'profile')} className="w-10 h-10 flex items-center justify-center text-gray-400 hover:text-moOlive rounded-full bg-white border border-moBlack shadow-sm transition-colors">
                             <Icon name="user" size={18} color="currentColor"/>

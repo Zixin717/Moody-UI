@@ -32,7 +32,7 @@ const ProfilePage = () => {
   // editData -> 綁定在輸入框上的狀態，會隨著使用者打字改變
   const [editData, setEditData] = useState({ nickname: '', email: '', phone: '', birthday: '' });
 
-  // 1. 畫面剛載入時，從 localStorage 抓取用戶資料
+  // 畫面剛載入時，從 localStorage 抓取用戶資料
   useEffect(() => {
     const storedUser = JSON.parse(localStorage.getItem('userData') || '{}');
     if (storedUser && storedUser.id) {
@@ -43,7 +43,8 @@ const ProfilePage = () => {
         nickname: storedUser.nickname || '',
         email: storedUser.email || '',
         phone: storedUser.phone || '',
-        birthday: storedUser.birthday || ''
+        birthday: storedUser.birthday || '',
+        isNotificationEnabled: storedUser.isNotificationEnabled ?? true 
       };
 
       setOriginalData(loadedData);
@@ -51,17 +52,17 @@ const ProfilePage = () => {
     }
   }, []);
 
-  // 2. 處理輸入框文字改變
+  // 輸入框文字改變
   const handleChange = (e) => {
     setEditData({ ...editData, [e.target.name]: e.target.value });
   };
 
-  // 3. Reset 按鈕：把編輯中的資料蓋回原本的備份
+  // Reset 按鈕：把編輯中的資料蓋回原本的備份
   const handleReset = () => {
     setEditData(originalData);
   };
 
-  // 4. Save 按鈕：打 API 更新資料庫
+  // Save 按鈕：打 API 更新資料庫
   const handleSave = async () => {
     try {
       const response = await fetch(`https://localhost:7247/api/user/update/${userId}`, {
@@ -89,6 +90,31 @@ const ProfilePage = () => {
     } catch (error) {
       console.error("API 連線錯誤:", error);
       alert("無法連接到伺服器！");
+    }
+  };
+
+  // 處理通知開關點擊
+  const handleToggleNotification = async () => {
+    // 1. 取得切換後的新狀態 (原本是 true 就變 false)
+    const newStatus = !editData.isNotificationEnabled;
+    
+    // 2. optimistic UI
+    setEditData({ ...editData, isNotificationEnabled: newStatus });
+
+    // 3. 背景 API 儲存到資料庫
+    try {
+      await fetch(`https://localhost:7247/api/user/update-settings/${userId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          isNotificationEnabled: newStatus,
+          theme: editData.theme || "Beige" // 保持原本的主題
+        }),
+      });
+    } catch (error) {
+      console.error("自動儲存失敗:", error);
+      // 如果失敗，再把開關切回來
+      setEditData({ ...editData, isNotificationEnabled: !newStatus });
     }
   };
 
@@ -219,16 +245,22 @@ const ProfilePage = () => {
               {openSections.setting && (
                 <div className="flex flex-col gap-6 pt-4">                  
                  {/* 通知切換 (切換按鈕) */}
-                  <div className="relative flex items-center justify-between bg-white border border-moBlack rounded-xl px-5 py-4 cursor-pointer hover:border-moAzure transition-colors">
+                  <div 
+                    className="relative flex items-center justify-between bg-white border border-moBlack rounded-xl px-5 py-4 cursor-pointer hover:border-moAzure transition-colors"
+                    onClick={handleToggleNotification}
+                  >
                     <div className="flex items-center gap-4">
                       <Icon name="globe" size={20} color="#786C56" />
-                      <span className="text-sm font-bold text-moBrown/80">Notifications</span>
-                      <span className="text-xs text-gray-400 font-bold ml-2">On</span>
+                        <span className="text-sm font-bold text-moBrown/80">Notifications</span>
+                        <span className="text-xs text-gray-400 font-bold ml-2">
+                          {editData.isNotificationEnabled ? "On" : "Off"}
+                        </span>
                     </div>
-                    {/* 極簡開關示意圖 (之後可以做開關狀態) */}
-                    <div className="w-12 h-6 rounded-full bg-moOlive p-1 flex items-center justify-end border border-moBlack shadow-inner">
-                      <div className="w-4 h-4 rounded-full bg-white shadow"></div>
-                    </div>
+                    
+                    {/* 動態開關視覺設計 */}
+                      <div className={`w-12 h-6 rounded-full p-1 flex items-center border border-moBlack shadow-inner transition-colors duration-300 ${editData.isNotificationEnabled ? 'bg-moOlive justify-end' : 'bg-moBrown justify-start'}`}>
+                          <div className="w-4 h-4 rounded-full bg-white shadow"></div>
+                      </div>
                   </div>
 
                   {/* 主題切換 (切換按鈕) */}
