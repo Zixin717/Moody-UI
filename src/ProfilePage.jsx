@@ -5,20 +5,17 @@ import Icon from './Icon';             // 全域 Icon
 
 
 const ProfilePage = () => {
-  // 選單與收折狀態
+  /* ======================================== 事件：收折與狀態 =========================================== */
   const [openMenu, setOpenMenu] = useState(null);
   const [openSections, setOpenSections] = useState({ account: true, setting: false, delete: false });
-
-  // 用戶 ID 狀態
-  const [userId, setUserId] = useState(null);
-
-  // 生日資料狀態
-  const [birthday, setBirthday] = useState('2000-01-01');
-
-  // 收折功能
   const toggleSection = (section) => {
     setOpenSections(prev => ({ ...prev, [section]: !prev[section] }));
   };
+  // 1. 用戶 ID
+  const [userId, setUserId] = useState(null);
+
+  // 2. 生日
+  const [birthday, setBirthday] = useState('2000-01-01');
 
   // 格式化生日顯示方法
   const formatDisplayDate = (dateStr) => {
@@ -26,13 +23,13 @@ const ProfilePage = () => {
     return dateStr.replace(/-/g, " / ");
   };
 
-  // originalData -> 用來備份，當按下 Reset 時可以復原。
+  // 3. 原始資料 -> 用來備份，當按下 Reset 時可以復原。
   const [originalData, setOriginalData] = useState({ nickname: '', email: '', phone: '', birthday: '' });
   
-  // editData -> 綁定在輸入框上的狀態，會隨著使用者打字改變
+  // 4. 編輯資料 -> 綁定在輸入框上的狀態，會隨著使用者打字改變
   const [editData, setEditData] = useState({ nickname: '', email: '', phone: '', birthday: '' });
 
-  // 畫面剛載入時，從 localStorage 抓取用戶資料
+  // 5. 畫面剛載入時，從 localStorage 抓取用戶資料
   useEffect(() => {
     const storedUser = JSON.parse(localStorage.getItem('userData') || '{}');
     if (storedUser && storedUser.id) {
@@ -52,17 +49,17 @@ const ProfilePage = () => {
     }
   }, []);
 
-  // 輸入框文字改變
+  // 6. 輸入框文字改變
   const handleChange = (e) => {
     setEditData({ ...editData, [e.target.name]: e.target.value });
   };
 
-  // Reset 按鈕：把編輯中的資料蓋回原本的備份
+  // 7. Reset 按鈕：把編輯中的資料蓋回原本的備份
   const handleReset = () => {
     setEditData(originalData);
   };
 
-  // Save 按鈕：打 API 更新資料庫
+  // 8. Save 按鈕：打 API 更新資料庫
   const handleSave = async () => {
     try {
       const response = await fetch(`https://localhost:7247/api/user/update/${userId}`, {
@@ -93,7 +90,7 @@ const ProfilePage = () => {
     }
   };
 
-  // 處理通知開關點擊
+  /* ======================================== 事件：通知開關點擊 =========================================== */
   const handleToggleNotification = async () => {
     // 1. 取得切換後的新狀態 (原本是 true 就變 false)
     const newStatus = !editData.isNotificationEnabled;
@@ -108,7 +105,7 @@ const ProfilePage = () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           isNotificationEnabled: newStatus,
-          theme: editData.theme || "Beige" // 保持原本的主題
+          theme: editData.theme // 舊主題
         }),
       });
     } catch (error) {
@@ -117,6 +114,42 @@ const ProfilePage = () => {
       setEditData({ ...editData, isNotificationEnabled: !newStatus });
     }
   };
+
+  /* ======================================== 事件：主題切換 =========================================== */
+  const handleToggleTheme = async () => {
+  // 1. 決定新主題
+  const newTheme = editData.theme === 'Beige' ? 'Dark' : 'Beige';
+  
+  // 2. 樂觀更新：立刻改狀態
+  setEditData({ ...editData, theme: newTheme });
+
+  // 3. 直接改變瀏覽器 body 的 Class，讓 Tailwind 的 dark 模式生效。
+  if (newTheme === 'Dark') {
+    document.body.classList.add('theme-dark');
+  } else {
+    document.body.classList.remove('theme-dark');
+  }
+
+  // 4. 背景打 API 存進資料庫
+  try {
+    await fetch(`https://localhost:7247/api/user/update-settings/${userId}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        isNotificationEnabled: editData.isNotificationEnabled,  // 舊通知狀態
+        theme: newTheme // 傳送新主題
+      }),
+    });
+    
+    // 更新 localStorage 裡的 userData，這樣重新整理才不會跑掉
+    const currentStorage = JSON.parse(localStorage.getItem('userData'));
+    currentStorage.theme = newTheme;
+    localStorage.setItem('userData', JSON.stringify(currentStorage));
+
+  } catch (error) {
+    console.error("切換主題失敗", error);
+  }
+};
 
   return (
     <MainLayout>
@@ -138,11 +171,12 @@ const ProfilePage = () => {
           <div className="w-full max-w-3xl flex flex-col gap-4">
             
             {/* ── 1. Account 區塊 ── */}
-            <div className="bg-moCream/80 border border-moBlack rounded-[2rem] p-8 shadow-sm transition-all duration-300">
+            <div className="bg-[var(--mo-cream)] border border-moBlack rounded-[2rem] p-8 shadow-sm transition-all duration-300">
+            
               {/* 收折標題 */}
               <div className="flex justify-between items-center cursor-pointer mb-6" onClick={() => toggleSection('account')}>
-                <h2 className="text-xl font-bold font-serif text-moBrown">Account</h2>
-                <button className="text-moBrown/60 hover:text-moOlive transition-colors">
+                <h2 className="text-xl font-bold font-serif text-[var(--mo-brown)]">Account</h2>
+                <button className="text-[var(--mo-brown)] hover:text-[var(--mo-azure)] transition-colors">
                   <Icon name={openSections.account ? "chevronUp" : "chevronDown"} size={24} color="currentColor" />
                 </button>
               </div>
@@ -153,10 +187,10 @@ const ProfilePage = () => {
 
                   {/* Nickname */}
                   <label className="block group cursor-text">
-                    <span className="block text-sm font-bold text-moBrown/80 mb-2">Nickname</span>
+                    <span className="block text-sm font-bold text-[var(--mo-brown-80)] mb-2">Nickname</span>
                     <div className="flex items-center justify-between bg-white border border-moBlack rounded-xl px-4 py-3 transition-colors focus-within:border-moAzure hover:border-moAzure group cursor-pointer">
                       <div className="flex items-center gap-3 w-full">
-                        <div className="text-moOlive"><Icon name="user" size={20} color="currentColor" /></div>
+                        <div className="text-[var(--mo-olive)]"><Icon name="user" size={20} color="currentColor" /></div>
                         <input type="text" name="nickname" value={editData.nickname} onChange={handleChange} className="w-full outline-none text-gray-700 font-medium bg-transparent" />
                       </div>
                       <span className="text-sm font-bold text-gray-400 group-focus-within:text-moAzure transition-colors">Edit</span>
@@ -165,10 +199,10 @@ const ProfilePage = () => {
 
                   {/* E-mail */}
                   <label className="block group cursor-text">
-                    <span className="block text-sm font-bold text-moBrown/80 mb-2">E-mail</span>
+                    <span className="block text-sm font-bold text-[var(--mo-brown-80)] mb-2">E-mail</span>
                     <div className="flex items-center justify-between bg-white border border-moBlack rounded-xl px-4 py-3 transition-colors focus-within:border-moAzure hover:border-moAzure group cursor-pointer">
                       <div className="flex items-center gap-3 w-full">
-                        <div className="text-moOlive"><Icon name="search" size={20} color="currentColor" /></div>
+                        <div className="text-[var(--mo-olive)]"><Icon name="search" size={20} color="currentColor" /></div>
                         <input type="email" name="email" value={editData.email} onChange={handleChange} className="w-full outline-none text-gray-700 font-medium bg-transparent" />
                       </div>
                       <span className="text-sm font-bold text-gray-400 group-focus-within:text-moAzure transition-colors">Edit</span>
@@ -177,10 +211,10 @@ const ProfilePage = () => {
 
                   {/* Password (靜態顯示，點擊跳轉) */}
                   <div>
-                    <span className="block text-sm font-bold text-moBrown/80 mb-2">Password</span>
+                    <span className="block text-sm font-bold text-[var(--mo-brown-80)] mb-2">Password</span>
                     <Link to="/verify" className="flex items-center justify-between bg-white border border-moBlack rounded-xl px-4 py-3 hover:border-moAzure transition-colors group cursor-pointer">
                       <div className="flex items-center gap-3">
-                        <div className="text-moOlive"><Icon name="sparkle" size={20} color="currentColor" /></div>
+                        <div className="text-[var(--mo-olive)]"><Icon name="sparkle" size={20} color="currentColor" /></div>
                         <span className="text-gray-700 tracking-widest mt-1">********</span>
                       </div>
                       <span className="text-sm font-bold text-gray-400 group-hover:text-moAzure transition-colors">Edit</span>
@@ -189,10 +223,10 @@ const ProfilePage = () => {
 
                   {/* Phone */}
                   <label className="block group cursor-text">
-                    <span className="block text-sm font-bold text-moBrown/80 mb-2">Phone</span>
+                    <span className="block text-sm font-bold text-[var(--mo-brown-80)] mb-2">Phone</span>
                     <div className="flex items-center justify-between bg-white border border-moBlack rounded-xl px-4 py-3 transition-colors focus-within:border-moAzure hover:border-moAzure group cursor-pointer">
                       <div className="flex items-center gap-3 w-full">
-                        <div className="text-moOlive"><Icon name="bell" size={20} color="currentColor" /></div>
+                        <div className="text-[var(--mo-olive)]"><Icon name="bell" size={20} color="currentColor" /></div>
                         <input type="tel" name="phone" value={editData.phone} onChange={handleChange} className="w-full outline-none text-gray-700 font-medium bg-transparent" />
                       </div>
                       <span className="text-sm font-bold text-gray-400 group-focus-within:text-moAzure transition-colors">Edit</span>
@@ -201,10 +235,10 @@ const ProfilePage = () => {
 
                   {/* Birthday */}
                   <label className="block group cursor-pointer">
-                    <span className="block text-sm font-bold text-moBrown/80 mb-2">Birthday</span>
+                    <span className="block text-sm font-bold text-[var(--mo-brown-80)] mb-2">Birthday</span>
                     <div className="relative flex items-center justify-between bg-white border border-moBlack rounded-xl px-4 py-3 transition-colors focus-within:border-moAzure hover:border-moAzure group cursor-pointer">
                       <div className="flex items-center gap-3 w-full">
-                        <div className="text-moOlive"><Icon name="calendar" size={20} color="currentColor" /></div>
+                        <div className="text-[var(--mo-olive)]"><Icon name="calendar" size={20} color="currentColor" /></div>
                         <input 
                           type="date" 
                           name="birthday"
@@ -213,7 +247,7 @@ const ProfilePage = () => {
                           className="w-full outline-none text-gray-700 font-medium bg-transparent cursor-pointer" 
                         />
                       </div>
-                      <div className="text-moBrown/60 group-focus-within:text-moAzure group-hover:text-moAzure transition-colors">
+                      <div className="text-[var(--mo-brown-80)] group-focus-within:text-moAzure group-hover:text-moAzure transition-colors">
                         <Icon name="calendar" size={20} color="currentColor" />
                       </div>
                     </div>
@@ -221,10 +255,10 @@ const ProfilePage = () => {
 
                   {/* 儲存與重設按鈕 */}
                   <div className="flex justify-center gap-4 mt-6">
-                    <button onClick={handleReset} className="px-8 py-2 rounded-full border border-moBlack bg-white text-moBrown font-bold hover:bg-gray-50 transition-colors shadow-sm">
+                    <button onClick={handleReset} className="px-8 py-2 rounded-full border border-moBlack bg-white text-[var(--mo-brown)] font-bold hover:bg-gray-50 transition-colors shadow-sm">
                       Reset
                     </button>
-                    <button onClick={handleSave} className="px-8 py-2 rounded-full border border-moBlack bg-[#D4E2A5] text-moBrown font-bold hover:bg-[#c2d38d] transition-colors shadow-sm">
+                    <button onClick={handleSave} className="px-8 py-2 rounded-full border border-moBlack bg-[var(--mo-citron)] text-[var(--mo-brown)] font-bold hover:bg-[var(--mo-olive)] transition-colors shadow-sm">
                       Save
                     </button>
                   </div>
@@ -234,10 +268,10 @@ const ProfilePage = () => {
             </div>
 
             {/* ── 2. Setting 區塊 ── */}
-            <div className="bg-moCream/80 border border-moBlack rounded-[2rem] p-8 shadow-sm transition-all duration-300">
+            <div className="bg-[var(--mo-cream)] border border-moBlack rounded-[2rem] p-8 shadow-sm transition-all duration-300">
               <div className="flex justify-between items-center cursor-pointer mb-6" onClick={() => toggleSection('setting')}>
-                <h2 className="text-xl font-bold font-serif text-moBrown">Setting</h2>
-                <button className="text-moBrown/60 hover:text-moOlive transition-colors">
+                <h2 className="text-xl font-bold font-serif text-[var(--mo-brown)]">Setting</h2>
+                <button className="text-[var(--mo-brown)]/60 hover:text-[var(--mo-azure)] transition-colors">
                   <Icon name={openSections.setting ? "chevronUp" : "chevronDown"} size={24} color="currentColor" />
                 </button>
               </div>
@@ -250,31 +284,33 @@ const ProfilePage = () => {
                     onClick={handleToggleNotification}
                   >
                     <div className="flex items-center gap-4">
-                      <Icon name="globe" size={20} color="#786C56" />
-                        <span className="text-sm font-bold text-moBrown/80">Notifications</span>
+                      <div className="text-[var(--mo-olive)]"><Icon name="globe" size={20} color="currentColor" /></div>
+                        <span className="text-sm font-bold text-[var(--mo-brown-80)]">Notifications</span>
                         <span className="text-xs text-gray-400 font-bold ml-2">
                           {editData.isNotificationEnabled ? "On" : "Off"}
                         </span>
                     </div>
                     
                     {/* 動態開關視覺設計 */}
-                      <div className={`w-12 h-6 rounded-full p-1 flex items-center border border-moBlack shadow-inner transition-colors duration-300 ${editData.isNotificationEnabled ? 'bg-moOlive justify-end' : 'bg-moBrown justify-start'}`}>
+                      <div className={`w-12 h-6 rounded-full p-1 flex items-center border border-moBlack shadow-inner transition-colors duration-300 ${editData.isNotificationEnabled ? 'bg-[var(--mo-olive)] justify-end' : 'bg-[var(--mo-brown-80)] justify-start'}`}>
                           <div className="w-4 h-4 rounded-full bg-white shadow"></div>
                       </div>
                   </div>
 
                   {/* 主題切換 (切換按鈕) */}
-                  <div className="relative flex items-center justify-between bg-white border border-moBlack rounded-xl px-5 py-4 cursor-pointer hover:border-moAzure transition-colors">
+                  <div className="relative flex items-center justify-between bg-white border border-moBlack rounded-xl px-5 py-4 cursor-pointer hover:border-moAzure transition-colors" 
+                       onClick={handleToggleTheme} //綁定事件
+                  >
                     <div className="flex items-center gap-4">
-                      <Icon name="moon" size={20} color="#786C56" />
-                      <span className="text-sm font-bold text-moBrown/80">Theme</span>
-                      <span className="text-xs text-gray-400 font-bold ml-2">Beige</span>
+                        <div className="text-[var(--mo-olive)]"><Icon name="moon" size={20} color="currentColor" /></div>
+                        <span className="text-sm font-bold text-[var(--mo-brown-80)]">Theme</span>
+                        <span className="text-xs text-gray-400 font-bold ml-2">{editData.theme}</span>
+                      </div>
+                      {/* 動態開關 */}
+                      <div className={`w-12 h-6 rounded-full p-1 flex items-center border border-moBlack shadow-inner transition-colors duration-300 ${editData.theme === 'Dark' ? 'bg-[var(--mo-olive)] justify-end' : 'bg-[var(--mo-brown-80)] justify-start'}`}>
+                        <div className="w-4 h-4 rounded-full bg-white shadow"></div>
+                      </div>
                     </div>
-                    {/* 極簡開關示意圖 (之後可以做開關狀態) */}
-                    <div className="w-12 h-6 rounded-full bg-moOlive p-1 flex items-center justify-end border border-moBlack shadow-inner">
-                      <div className="w-4 h-4 rounded-full bg-white shadow"></div>
-                    </div>
-                  </div>
 
                   
 
@@ -284,7 +320,7 @@ const ProfilePage = () => {
             </div>
 
             {/* ── 3. Delete Account ── */}
-            <div className="bg-moCream/80 border border-moBlack rounded-[2rem] p-8 shadow-sm transition-all duration-300">
+            <div className="bg-[var(--mo-cream)] border border-moBlack rounded-[2rem] p-8 shadow-sm transition-all duration-300">
               {/* 收折標題 (Delete Account 顏色改為警告紅) */}
               <div className="flex justify-between items-center cursor-pointer mb-6" onClick={() => toggleSection('delete')}>
                 <h2 className="text-xl font-bold font-serif text-red-500">Delete Account</h2>

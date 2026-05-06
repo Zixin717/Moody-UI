@@ -190,7 +190,7 @@ const MainLayout = ({ children }) => {
             {openMenu && <div className="fixed inset-0 z-40" onClick={() => setOpenMenu(null)} />}
 
                 {/* ===== 1. 頂層導覽列 (TopBar) ===== */}
-                <header className="relative z-45 bg-moOlive border-b border-moBlack text-white flex items-center justify-between px-8 py-4 mb-3 flex-shrink-0">
+                <header className="relative z-45 bg-[var(--color-topbar)] border-b border-moBlack text-white flex items-center justify-between px-8 py-4 mb-3 flex-shrink-0">
                     <Link to="/home" className="text-[30px] text-moBlack font-bold font-serif cursor-pointer hover:text-moCitron transition-colors">Moody</Link>
                     
                     {/* 1-1 搜尋列 */}

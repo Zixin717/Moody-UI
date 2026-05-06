@@ -6,6 +6,42 @@
 5. 實現刪除帳號功能
 6. 實現登入時忘記密碼功能
 
+{/* ── 1. Account 區塊 ── */}
+{/* 🌟 修正：直接用 bg-moCream80，拿掉 dark:，它白天黑夜都會自己判斷！ */}
+<div className="bg-moCream80 border border-moBlack rounded-[2rem] p-8 shadow-sm transition-all duration-300">
+  
+  <div className="flex justify-between items-center cursor-pointer mb-6" onClick={() => toggleSection('account')}>
+    <h2 className="text-xl font-bold font-serif text-moBrown">Account</h2>
+    <button className="text-moBrown/60 hover:text-moOlive transition-colors">
+      <Icon name={openSections.account ? "chevronUp" : "chevronDown"} size={24} color="currentColor" />
+    </button>
+  </div>
+
+  {openSections.account && (
+    <div className="flex flex-col gap-5">
+
+      {/* Nickname */}
+      <label className="block group cursor-text">
+        {/* 🌟 修正：直接用 text-moBrown80，拿掉 dark: */}
+        <span className="block text-sm font-bold text-moBrown80 mb-2">Nickname</span>
+        
+        {/* 🌟 修正：bg-white 這種死顏色，才需要加 dark:bg-[#3D3D3D] 讓它在黑夜變深灰 */}
+        <div className="flex items-center justify-between bg-white dark:bg-[#3D3D3D] border border-moBlack dark:border-gray-500 rounded-xl px-4 py-3 transition-colors focus-within:border-moAzure hover:border-moAzure group cursor-pointer">
+          <div className="flex items-center gap-3 w-full">
+            <div className="text-moOlive"><Icon name="user" size={20} color="currentColor" /></div>
+            {/* 🌟 修正：text-gray-700 也是死顏色，黑夜要變成 text-gray-200 */}
+            <input type="text" name="nickname" value={editData.nickname} onChange={handleChange} className="w-full outline-none text-gray-700 dark:text-gray-200 font-medium bg-transparent" />
+          </div>
+          <span className="text-sm font-bold text-gray-400 group-focus-within:text-moAzure transition-colors">Edit</span>
+        </div>
+      </label>
+
+      {/* ... 下面的 E-mail, Password 等欄位，請比照上方 Nickname 的邏輯替換 ... */}
+      
+    </div>
+  )}
+</div>
+
 
 MainLayout.jsx
 -> 主切版設計
