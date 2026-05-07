@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link, NavLink } from 'react-router-dom';
+import { Link, NavLink, useNavigate } from 'react-router-dom';
 import MainLayout from './MainLayout'; // 全域 佈局
 import Icon from './Icon';             // 全域 Icon
 
@@ -8,6 +8,10 @@ const ProfilePage = () => {
   /* ======================================== 事件：收折與狀態 =========================================== */
   const [openMenu, setOpenMenu] = useState(null);
   const [openSections, setOpenSections] = useState({ account: true, setting: false, delete: false });
+  const [isDeleteConfirmed, setIsDeleteConfirmed] = useState(false);
+  const navigate = useNavigate();
+  
+  
   const toggleSection = (section) => {
     setOpenSections(prev => ({ ...prev, [section]: !prev[section] }));
   };
@@ -151,6 +155,36 @@ const ProfilePage = () => {
   }
 };
 
+  /* ======================================== 事件：帳號刪除 =========================================== */
+  // 處理刪除帳號
+  const handleDeleteAccount = async () => {
+    if (!isDeleteConfirmed) {
+      alert("請先勾選確認刪除的方塊！");
+      return;
+    }
+
+    // 確認是否刪除
+    const finalConfirm = window.confirm("確定要永久刪除帳號嗎？此動作無法復原！");
+    if (!finalConfirm) return;
+    try {
+      const response = await fetch(`https://localhost:7247/api/user/delete/${userId}`, {
+        method: 'PUT'
+      });
+
+      if (response.ok) {
+        alert("您的帳號已刪除，將為您登出。");
+        localStorage.clear(); // 清除所有 localStorage 資料
+        navigate('/login');
+      } else {
+        alert("刪除失敗，請稍後再試。");
+      }
+    } catch (error) {
+      console.error("刪除連線異常", error);
+    }
+  };
+
+
+
   return (
     <MainLayout>
 
@@ -255,7 +289,7 @@ const ProfilePage = () => {
 
                   {/* 儲存與重設按鈕 */}
                   <div className="flex justify-center gap-4 mt-6">
-                    <button onClick={handleReset} className="px-8 py-2 rounded-full border border-moBlack bg-white text-[var(--mo-brown)] font-bold hover:bg-gray-50 transition-colors shadow-sm">
+                    <button onClick={handleReset} className="px-8 py-2 rounded-full border border-moBlack bg-white text-[var(--color-text-muted)] font-bold hover:bg-gray-50 transition-colors shadow-sm">
                       Reset
                     </button>
                     <button onClick={handleSave} className="px-8 py-2 rounded-full border border-moBlack bg-[var(--mo-citron)] text-[var(--mo-brown)] font-bold hover:bg-[var(--mo-olive)] transition-colors shadow-sm">
@@ -343,9 +377,16 @@ const ProfilePage = () => {
                     </div>
                   </div>
 
-                   {/* 確認 Checkbox (極簡日系開關樣式示意) */}
-                  <label className="flex items-center gap-3 cursor-pointer group mt-4">
-                    <div className="w-5 h-5 border-2 border-red-300 rounded-md flex items-center justify-center group-hover:border-red-500 transition-colors">
+                   {/* 確認 Checkbox */}
+                  <label className="flex items-center gap-3 cursor-pointer group mt-4"
+                    onClick={()=> setIsDeleteConfirmed(!isDeleteConfirmed)}
+                  >
+                    <div className={`w-5 h-5 
+                                      border-2 rounded-md 
+                                      flex items-center justify-center 
+                                      transition-colors 
+                                      ${isDeleteConfirmed ? 
+                                      'border-red-500 bg-red-500' : 'border-red-300 group-hover:border-red-500'}`}>
                       {/* 如果選中，這裡可以加一個Icon check */}
                       <div className="w-3 h-3 bg-red-400 rounded-sm opacity-0 group-hover:opacity-100 transition-opacity"></div>
                     </div>
@@ -354,8 +395,12 @@ const ProfilePage = () => {
 
                   {/* 下方 Delete 按鈕 */}
                   <div className="flex justify-center gap-4 mt-8 w-full">
-                    <button className="px-8 py-2 rounded-full border border-moBlack bg-red-500 text-white font-bold hover:bg-red-700 transition-colors shadow-sm">
-                      Delete
+                    <button onClick={handleDeleteAccount} // 刪除事件
+                     // 若未勾選，按鈕變灰且不能按，增加 UX 質感
+                            className={`px-8 py-2 rounded-full border transition-colors shadow-sm font-bold ${isDeleteConfirmed ? 'border-moBlack bg-red-500 text-white hover:bg-red-700' : 'border-gray-300 bg-gray-200 text-gray-400 cursor-not-allowed'}`}
+                            disabled={!isDeleteConfirmed}
+                    >
+                            Delete
                     </button>
                   </div>
                 </div>

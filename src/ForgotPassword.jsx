@@ -131,7 +131,7 @@ const ForgotPassword = () => {
       <div className="min-h-screen bg-[#FDFBF7] bg-[linear-gradient(to_right,#e5e7eb_1px,transparent_1px),linear-gradient(to_bottom,#e5e7eb_1px,transparent_1px)] bg-[size:24px_24px] flex flex-col items-center justify-center font-sans">
         
         <div className="absolute top-6 left-8">
-          <Link to="/" className="text-[30px] text-moBlack font-bold font-serif hover:text-moAzure transition-colors">Moody</Link>
+          <Link to="/" className="text-[30px] text-var(--mo-black) font-bold font-serif hover:text-[var(--mo-azure)] transition">Moody</Link>
         </div>
 
         <div className="bg-white border border-moBlack rounded-[2.5rem] p-12 flex flex-col items-center shadow-md w-[450px] min-h-[450px] transition-all duration-300">
@@ -142,15 +142,15 @@ const ForgotPassword = () => {
           {/* ===== Step 1：輸入 E-mail ===== */}
           {step === 1 && (
             <div className="flex flex-col items-center w-full animate-fade-in">
-              <h2 className="text-2xl font-serif text-moBrown mb-2">Forgot Password</h2>
+              <h2 className="text-2xl font-serif text-[#786C56] mb-2">Forgot Password</h2>
               <p className="text-sm text-gray-500 text-center mb-8">Please Enter Your E-mail Address<br/>To Receive Verification code</p>
 
               <div className="w-16 h-12 flex items-center justify-center mb-10">
-                 <svg width="60" viewBox="0 0 24 24" fill="none" stroke="#786C56" strokeWidth="1.5"><rect x="2" y="4" width="20" height="16" rx="2" /><polyline points="2 6 12 14 22 6" /></svg>
+                 <svg width="60" viewBox="0 0 24 24" fill="none" stroke="#786C56" strokeWidth="1"><rect x="2" y="4" width="20" height="16" rx="2" /><polyline points="2 6 12 14 22 6" /></svg>
               </div>
 
               <div className="w-full flex flex-col gap-2 mb-4">
-                <div className="flex items-center bg-moCream/30 border border-moBlack rounded-full px-4 py-3 focus-within:border-moAzure focus-within:ring-2 focus-within:ring-moAzure/20 transition-all">
+                <div className="flex items-center bg-white border border-gray rounded-full px-4 py-3 focus-within:border-[#A1A34E] transition-all">
                   <span className="w-4 h-4 border-2 border-gray-400 rounded-full mr-3"></span>
                   <input 
                     type="email" 
@@ -174,7 +174,7 @@ const ForgotPassword = () => {
           {/* ===== Step 2：輸入 4 位數驗證碼 ===== */}
           {step === 2 && (
             <div className="flex flex-col items-center w-full animate-fade-in">
-              <h2 className="text-2xl font-serif text-moBrown mb-2">Verify Your E-mail</h2>
+              <h2 className="text-2xl font-serif text-[#786C56] mb-2">Verify Your E-mail</h2>
               <p className="text-sm text-gray-500 text-center mb-8">Please Enter The 4 Digital Code Sent to<br/><span className="font-bold text-moBrown">{email}</span></p>
 
               <div className="w-16 h-12 flex items-center justify-center mb-10">
@@ -215,11 +215,11 @@ const ForgotPassword = () => {
               <p className="text-sm text-gray-500 text-center mb-8">Please Enter New Password<br/>To Reset Account</p>
 
               <div className="w-16 h-12 flex items-center justify-center mb-6">
-                 <svg width="50" viewBox="0 0 24 24" fill="none" stroke="#786C56" strokeWidth="1.5"><rect x="3" y="11" width="18" height="11" rx="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" /></svg>
+                 <svg width="50" viewBox="0 0 24 24" fill="none" stroke="#786C56" strokeWidth="1"><rect x="3" y="11" width="18" height="11" rx="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" /></svg>
               </div>
 
               <div className="w-full flex flex-col gap-4 mb-4">
-                <div className="flex items-center bg-moCream/30 border border-moBlack rounded-full px-4 py-3 focus-within:border-moAzure focus-within:ring-2 focus-within:ring-moAzure/20 transition-all">
+                <div className="flex items-center bg-white border border-gray rounded-full px-4 py-3 focus-within:border-[#A1A34E] transition-all">
                   <span className="w-4 h-4 border-2 border-gray-400 rounded-full mr-3"></span>
                   <input 
                     type="password" 
@@ -230,7 +230,7 @@ const ForgotPassword = () => {
                   />
                 </div>
 
-                <div className="flex items-center bg-moCream/30 border border-moBlack rounded-full px-4 py-3 focus-within:border-moAzure focus-within:ring-2 focus-within:ring-moAzure/20 transition-all">
+                <div className="flex items-center bg-white border border-gray rounded-full px-4 py-3 focus-within:border-[#A1A34E] transition-all">
                   <span className="w-4 h-4 border-2 border-gray-400 rounded-full mr-3"></span>
                   <input 
                     type="password" 

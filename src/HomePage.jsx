@@ -139,13 +139,13 @@ const HomePage = () => {
             </div>
 
             {/* 簡約風時鐘 */}
-            <div className="relative w-28 h-28 mx-auto my-auto rounded-full bg-moCream border border-moBlack shadow-inner flex items-center justify-center flex-shrink-0">
+            <div className="relative w-28 h-28 mx-auto my-auto rounded-full bg-[var(--mo-cream)] border border-[var(--mo-black)] shadow-inner flex items-center justify-center flex-shrink-0">
           
               {/* 1. 十二個極簡刻度 */}
               {[...Array(12)].map((_, i) => (
                 <div
                   key={i}
-                  className="absolute w-[2px] h-2 bg-moBrown/30 rounded-full"
+                  className="absolute w-[2px] h-2 bg-[var(--color-orbit)] rounded-full"
                   style={{
                     // translateY(-46px) -> 把刻度推到時鐘最邊緣
                     transform: `rotate(${i * 30}deg) translateY(-46px)` 
@@ -155,48 +155,48 @@ const HomePage = () => {
 
               {/* 2. 時針 (粗、短) */}
                 <div
-                  className="absolute bg-moBrown/80 rounded-full origin-bottom"
+                  className="absolute bg-[var(--mo-brown)] rounded-full origin-bottom"
                   style={{ width: '3px', height: '24px', bottom: '50%', transform: `rotate(${hourDeg}deg)` }}
                 />
 
               {/* 3. 分針 (中等) */}
                 <div
-                  className="absolute bg-moBrown/50 rounded-full origin-bottom"
+                  className="absolute bg-[var(--mo-brown)]/50 rounded-full origin-bottom"
                   style={{ width: '3px', height: '36px', bottom: '50%', transform: `rotate(${minuteDeg}deg)` }}
                 />
 
               {/* 4. 秒針 (指定色 moOlive) */}
                 <div
-                  className="absolute bg-moOlive rounded-full origin-bottom"
+                  className="absolute bg-[var(--mo-olive)] rounded-full origin-bottom"
                   style={{ width: '1px', height: '42px', bottom: '50%', transform: `rotate(${secondDeg}deg)` }}
                 />
 
               {/* 5. 中心固定圓點 */}
-                <div className="absolute w-2 h-2 bg-moBrown rounded-full z-10 shadow-sm" />
+                <div className="absolute w-2 h-2 bg-[var(--mo-brown)] rounded-full z-10 shadow-sm" />
             </div>
 
             {/* Habit */}
-            <div className="flex-1 bg-moCream/80 rounded-[2rem] p-6 flex flex-col shadow-sm border border-moBlack relative">
-              <h3 className="text-3xl font-bold font-serif text-moBlack mb-1">Habit</h3>
+            <div className="flex-1 bg-[var(--mo-cream)] rounded-[2rem] p-6 flex flex-col shadow-sm border border-[var(--mo-black)] relative">
+              <h3 className="text-3xl font-bold font-serif text-[var(--mo-black)] mb-1">Habit</h3>
 
               {/* 習慣清單 */}
               <ul className="space-y-4 flex-1">
                 <li className="text-sm font-medium text-gray-400 text-center mt-4">尚未新增任何習慣</li>
-                {/* <li className="flex items-center gap-3 text-sm font-medium text-moBrown">
-                  <Icon name="check" size={18} color="#A1A34E" /> Drink Water
+                {/* <li className="flex items-center gap-3 text-sm font-medium text-[var(--mo-brown)]">
+                  <Icon name="check" size={18} color="var(--mo-olive)" /> Drink Water
                 </li>
-                <li className="flex items-center gap-3 text-sm font-medium text-moBrown">
-                  <Icon name="check" size={18} color="#A1A34E" /> Exercise
+                <li className="flex items-center gap-3 text-sm font-medium text-[var(--mo-brown)]">
+                  <Icon name="check" size={18} color="var(--mo-olive)" /> Exercise
                 </li> */}
                 {/* 這行加了底線分隔 */}
-                {/* <li className="flex items-center gap-3 text-sm font-medium text-moBrown border-b border-[#E8E9DF] pb-4 mb-2">
-                  <Icon name="check" size={18} color="#A1A34E" /> Sleep 8 hr
+                {/* <li className="flex items-center gap-3 text-sm font-medium text-[var(--mo-brown)] border-b border-[#E8E9DF] pb-4 mb-2">
+                  <Icon name="check" size={18} color="var(--mo-olive)" /> Sleep 8 hr
                 </li>
-                <li className="flex items-center gap-3 text-sm font-medium text-moBrown">
-                  <Icon name="square" size={18} /> Dinner
+                <li className="flex items-center gap-3 text-sm font-medium text-[var(--mo-brown)]">
+                  <Icon name="square" size={18} color="var(--mo-olive)" /> Dinner
                 </li>
-                <li className="flex items-center gap-3 text-sm font-medium text-moBrown">
-                  <Icon name="square" size={18} /> Presentation
+                <li className="flex items-center gap-3 text-sm font-medium text-[var(--mo-brown)]">
+                  <Icon name="square" size={18} color="var(--mo-olive)" /> Presentation
                 </li> */}
               </ul>
 
@@ -206,7 +206,7 @@ const HomePage = () => {
                 <button 
                   // 這裡填炯宇的 Habit page 路徑，如果有專門新增習慣的頁面，改成 '/habit/new'。
                   onClick={() => navigate('/habit')} 
-                  className="w-8 h-8 flex items-center justify-center bg-white rounded-full shadow-sm text-moBrown hover:bg-moOlive hover:text-white transition-colors border border-gray-100"
+                  className="w-8 h-8 flex items-center justify-center bg-white rounded-full shadow-sm text-[var(--mo-brown)] hover:bg-[var(--mo-olive)] hover:text-white transition-colors border border-gray-100"
                 >
                   {/* 記得確保我有把 plus 的 Icon 加進去 */}
                   <Icon name="plus" size={16} color="currentColor" />
@@ -216,7 +216,9 @@ const HomePage = () => {
         </aside>
 
         {/* － Block 3 主視覺（Middle） － */}
-        <main className="border border-moBlack rounded-2xl flex-1 flex justify-center items-center py-4 overflow-hidden relative bg-[#FDFBF7] shadow-sm">            
+        <main className="border border-[var(--mo-black)] rounded-2xl 
+                         flex-1 flex justify-center items-center py-4 overflow-hidden relative 
+                         bg-[var(--color-glaxy)] shadow-sm">            
             <div className="w-full h-full relative">
                <InteractiveGalaxy diaries={[]} />
             </div>
@@ -226,14 +228,14 @@ const HomePage = () => {
         <aside className="w-[250px] flex flex-col gap-4"> 
 
         {/* 4-1 今日狀態 */}
-        <div className="flex-1 bg-moCream/80 rounded-[2rem] border border-moBlack p-6 shadow-sm flex flex-col">
-          <h3 className="text-2xl font-black font-serif text-moBlack mb-1">Today</h3>
+        <div className="flex-1 bg-[var(--mo-cream)] rounded-[2rem] border border-[var(--mo-black)] p-6 shadow-sm flex flex-col">
+          <h3 className="text-2xl font-black font-serif text-[var(--mo-black)] mb-1">Today</h3>
           {/* 預設的鼓勵小語 */}
-          <p className="text-xs text-moBrown/60 mb-6 font-medium">Ready to write your first journal!</p>
+          <p className="text-xs text-[var(--mo-brown)]/60 mb-6 font-medium">Ready to write your first journal!</p>
           
           {/* 空白狀態的標籤 */}
-          <div className="flex justify-start gap-2 text-xs font-bold text-moBrown/50 mb-4">
-            <span className="bg-white border border-moBrown/20 py-1 px-3 rounded-full">尚未記錄標籤</span>
+          <div className="flex justify-start gap-2 text-xs font-bold text-[var(--color-text-muted)] mb-4">
+            <span className="bg-white border border-[var(--mo-brown)]/20 py-1 px-3 rounded-full">尚未記錄標籤</span>
           </div>
 
           <div className="space-y-4">
@@ -242,15 +244,15 @@ const HomePage = () => {
               {label:"Sleep", done:0, total:5},
               {label:"Stress", done:0, total:5}].map(a => (
               <div key={a.label}>
-                <div className="flex justify-between text-xs font-bold text-moBrown/80 mb-2">
+                <div className="flex justify-between text-xs font-bold text-[var(--mo-cream)]/80 mb-2">
                   <span>{a.label}</span>
                   <span>{a.done}/{a.total}</span>
                 </div>
                 {/* 進度條底色 */}
-                <div className="h-2 bg-moBrown/10 rounded-full overflow-hidden border border-moBrown/20">
+                <div className="h-2 bg-[var(--mo-brown)]/10 rounded-full overflow-hidden border border-[var(--mo-brown)]/20">
                   {/* 進度條進度：因為 done 都是 0，所以一開始會是全空的 */}
                   <div 
-                    className="h-full bg-moOlive rounded-full transition-all duration-500"
+                    className="h-full bg-[var(--mo-olive)] rounded-full transition-all duration-500"
                     style={{ width: `${(a.done/a.total)*100}%` }} 
                   />
                 </div>
@@ -260,8 +262,8 @@ const HomePage = () => {
         </div>
 
         {/* 4-2： 週心情 */}
-        <div className="h-32 bg-moCream/80 rounded-[2rem] border border-moBlack p-5 shadow-sm flex flex-col justify-center">
-          <p className="text-sm font-bold text-moBrown mb-3 px-2">Mood</p>
+        <div className="h-32 bg-[var(--mo-cream)] rounded-[2rem] border border-[var(--mo-brown)] p-5 shadow-sm flex flex-col justify-center">
+          <p className="text-sm font-bold text-[var(--mo-brown)] mb-3 px-2">Mood</p>
           
           <div className="flex justify-between items-center px-2">
             {/* 用算好的 weekDays 陣列來跑迴圈 */}
@@ -275,7 +277,7 @@ const HomePage = () => {
               >
                 {day.mood === 'empty' ? (
                   // 空白狀態的圈圈
-                  <div className="text-gray-300 hover:text-moOlive transition-colors">
+                  <div className="text-gray-300 hover:text-[var(--mo-olive)] transition-colors">
                     <Icon name="circleOutline" size={20} color="currentColor" />
                   </div>
                 ) : (
@@ -292,7 +294,7 @@ const HomePage = () => {
         </div>
 
         {/* 4-3 音樂播放器 */}
-        <div className="mt-auto pt-4 border-t border-moBrown/20 flex flex-col items-center gap-3">
+        <div className="mt-auto pt-4 border-t border-[var(--mo-brown)]/20 flex flex-col items-center gap-3">
           
           {/* 隱藏的音樂播放元件 */}
           <audio ref={audioRef} src={playlist[currentTrack].src} loop />
@@ -300,28 +302,28 @@ const HomePage = () => {
           {/* 歌曲資訊與律動圈圈 */}
           <div className="flex items-center gap-3 w-full px-2">
             {/* 律動圈圈：如果 isPlaying 為 true，就加上 animate-spin 讓它轉動 */}
-            <div className={`w-8 h-8 rounded-full border border-moBlack flex items-center justify-center bg-white shadow-sm transition-all duration-500 ${isPlaying ? 'animate-spin shadow-[0_0_10px_#A1A34E]' : ''}`} style={{ animationDuration: '4s' }}>
+            <div className={`w-8 h-8 rounded-full border border-[var(--mo-brown)] flex items-center justify-center bg-white shadow-sm transition-all duration-500 ${isPlaying ? 'animate-spin shadow-[0_0_10px_#A1A34E]' : ''}`} style={{ animationDuration: '4s' }}>
               <Icon name="musicNote" size={14} color="#A1A34E" />
             </div>
             
             {/* 跑馬燈或歌名顯示 */}
             <div className="flex-1 overflow-hidden">
-              <p className="text-xs font-bold text-moBrown truncate">{playlist[currentTrack].title}</p>
-              <p className="text-[10px] text-moBrown/50">Ambient sounds</p>
+              <p className="text-xs font-bold text-[var(--mo-brown)] truncate">{playlist[currentTrack].title}</p>
+              <p className="text-[10px] text-[var(--mo-brown)]/50">Ambient sounds</p>
             </div>
           </div>
 
           {/* 播放控制按鈕 */}
-          <div className="flex items-center gap-4 bg-white border border-moBlack rounded-full px-4 py-1 shadow-sm">
-            <button onClick={prevTrack} className="text-moBrown/60 hover:text-moOlive transition-colors">
+          <div className="flex items-center gap-4 bg-white border border-[var(--mo-brown)] rounded-full px-4 py-1 shadow-sm">
+            <button onClick={prevTrack} className="text-[var(--mo-brown)]/60 hover:text-[var(--mo-olive)] transition-colors">
               <Icon name="skipBack" size={14} color="currentColor" />
             </button>
             
-            <button onClick={togglePlay} className="w-8 h-8 flex items-center justify-center bg-moOlive text-white rounded-full hover:bg-[#8e9043] transition-colors shadow-sm">
+            <button onClick={togglePlay} className="w-8 h-8 flex items-center justify-center bg-[var(--mo-olive)] text-white rounded-full hover:bg-[#8e9043] transition-colors shadow-sm">
               <Icon name={isPlaying ? "pause" : "play"} size={14} color="currentColor" />
             </button>
             
-            <button onClick={nextTrack} className="text-moBrown/60 hover:text-moOlive transition-colors">
+            <button onClick={nextTrack} className="text-[var(--mo-brown)]/60 hover:text-[var(--mo-olive)] transition-colors">
               <Icon name="skipForward" size={14} color="currentColor" />
             </button>
           </div>
@@ -329,9 +331,9 @@ const HomePage = () => {
         </div>
 
         {/* 4-4 相簿 */}
-        <div onClick={()=>navigate('habit')} className="h-32 bg-moCream/50 rounded-[2rem] border-2 border-dashed border-moBrown/80 p-5 flex flex-col items-center justify-center hover:bg-moCream/80 transition cursor-pointer">
-          <p className="text-sm font-bold text-moBrown/50 mb-1">Photo</p>
-          <span className="text-xs text-moBrown/40">Click to upload</span>
+        <div onClick={()=>navigate('habit')} className="h-32 bg-[var(--mo-cream-20)] rounded-[2rem] border-2 border-dashed border-[var(--mo-brown)]/80 p-5 flex flex-col items-center justify-center hover:bg-[var(--mo-cream)]/80 transition cursor-pointer">
+          <p className="text-sm font-bold text-[var(--mo-brown)]/50 mb-1">Photo</p>
+          <span className="text-xs text-[var(--mo-brown)]/40">Click to upload</span>
         </div>
 
         </aside>

@@ -100,7 +100,7 @@ const VerifyPage = () => {
       <div className="min-h-screen bg-[#FDFBF7] bg-[linear-gradient(to_right,#e5e7eb_1px,transparent_1px),linear-gradient(to_bottom,#e5e7eb_1px,transparent_1px)] bg-[size:24px_24px] flex flex-col items-center justify-center font-sans">
         
         <div className="absolute top-6 left-8">
-          <Link to="/home" className="text-[30px] text-moBlack font-bold font-serif hover:text-moAzure transition-colors">Moody</Link>
+          <Link to="/home" className="text-[30px] text-var(--mo-black) font-bold font-serif hover:text-[var(--mo-azure)] transition">Moody</Link>
         </div>
 
         <div className="bg-white border border-moBlack rounded-[2.5rem] p-12 flex flex-col items-center shadow-md w-[450px] min-h-[450px] transition-all duration-300">

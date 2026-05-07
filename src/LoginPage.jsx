@@ -52,12 +52,12 @@ const LoginPage = () => {
       
       {/* 左上角 Logo 回首頁 */}
       <div className="absolute top-6 left-8">
-        <Link to="/" className="text-[30px] text-moBlack font-bold font-serif hover:text-moCitron transition">Moody</Link>
+        <Link to="/" className="text-[30px] text-var(--mo-black) font-bold font-serif hover:text-[var(--mo-azure)] transition">Moody</Link>
       </div>
 
       {/* 登入卡片 */}
-      <div className="bg-white border border-moBlack rounded-[2.5rem] p-12 flex flex-col items-center shadow-md w-[400px]">
-        <h2 className="text-2xl font-serif text-moBrown mb-2">Login</h2>
+      <div className="bg-white border border-black rounded-[2.5rem] p-12 flex flex-col items-center shadow-md w-[400px]">
+        <h2 className="text-2xl font-serif text-[#786C56] mb-2">Login</h2>
         <p className="text-sm text-gray-500 text-center mb-8">Please enter your credentials to login</p>
         
         {/* 信封圖示 */}
@@ -68,13 +68,13 @@ const LoginPage = () => {
 
         {/* Form 表單送出 */}
         <form onSubmit={handleLogin} className="w-full flex flex-col gap-4">
-          <div className="flex items-center bg-moCream/30 border border-moBlack rounded-full px-4 py-3 focus-within:border-moOlive transition-colors">
+          <div className="flex items-center bg-white border border-gray rounded-full px-4 py-3 focus-within:border-moOlive transition-colors">
             <span className="w-4 h-4 border-2 border-gray-400 rounded-full mr-3"></span>
             <input type="email" name="email" value={formData.email} onChange={handleChange} required placeholder="E-mail" className="w-full bg-transparent outline-none text-sm text-gray-700" />
           </div>
 
           <div className="flex flex-col gap-2">
-            <div className="flex items-center bg-moCream/30 border border-moBlack rounded-full px-4 py-3 focus-within:border-moOlive transition-colors">
+            <div className="flex items-center bg-white border border-gray rounded-full px-4 py-3 focus-within:border-moOlive transition-colors">
               <span className="w-4 h-4 border-2 border-gray-400 rounded-full mr-3"></span>
               <input type="password" name="password" value={formData.password} onChange={handleChange} required placeholder="Password" className="w-full bg-transparent outline-none text-sm text-gray-700" />
             </div>
@@ -83,7 +83,7 @@ const LoginPage = () => {
             </div>
           </div>
 
-          <button type="submit" className="mt-6 w-full py-3 rounded-full border border-moBlack bg-[#D4E2A5] text-moBrown font-bold hover:bg-[#c2d38d] shadow-sm transition-colors">
+          <button type="submit" className="mt-8 px-10 py-2 w-full rounded-lg border border-black bg-[#D4E2A5] text-[#786C56] font-bold hover:bg-[#c2d38d] shadow-sm transition-colors">
               Login
           </button>
         </form>

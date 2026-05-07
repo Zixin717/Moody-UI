@@ -11,6 +11,7 @@ export default {
       colors: {
         moCream: 'var(--mo-cream)',      // 卡片底色
         moCream80: 'var(--mo-cream-80)',
+        moCream20: 'var(--mo-cream-20)', // 照片未填寫的底色
 
 
         moTeal: 'var(--mo-teal)',   // 淺灰藍 -> 裝飾、小星球
@@ -18,12 +19,18 @@ export default {
 
         moBrown: 'var(--mo-brown)', // 深褐咖 -> 主要文字、標題 -> 增加量感
         moBrown80: 'var(--mo-brown-80)', // 80% 淺色字色
+        moBrown20: 'var(--mo-brown-20)', // 20% 淺色字色，用於指針
 
         moBlack: 'var(--mo-black)', // 純黑   -> 強調邊框      -> 增加對比
         moAzure: 'var(--mo-azure)', // 天空藍 -> 系統選取用色   -> 功能明確
         moCitron: 'var(--mo-citron)', // 淺綠   -> Moody 綠 -> Logo、按鈕 Hover -> 品牌識別
 
         moTopbar: 'var(--color-topbar)', // 頂部工具列背景色
+        moGlaxy: 'var(--color-glaxy)',   // 主題背景色
+        moOrbit: 'var(--color-orbit)',   // 軌道顏色
+        moplanet: 'var(--color-planet)', // 行星顏色
+
+        moTextMuted: 'var(--color-text-muted)', // 次要文字顏色
       }
     },
   },

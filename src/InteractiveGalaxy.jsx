@@ -40,7 +40,7 @@ const DiaryCard = ({ entry, pos, onClick }) => {
       onClick={onClick}
       className="cursor-pointer"
     >
-      <div className="bg-white/95 backdrop-blur-md p-4 rounded-2xl border border-moBrown/40 shadow-xl w-[220px] animate-fade-in-up hover:bg-moCream transition-colors">
+      <div className="bg-white/95 backdrop-blur-md p-4 rounded-2xl border border-[var(--mo-brown-80)] shadow-xl w-[220px] animate-fade-in-up hover:bg-[var(--mo-cream)] transition-colors">
         <div className="flex justify-between items-center mb-1">
           <div className="flex items-center gap-2">
             <LocalIcon name="heart" size={14} color={entry.color} />
@@ -48,8 +48,8 @@ const DiaryCard = ({ entry, pos, onClick }) => {
           </div>
           <LocalIcon name="arrowUpRight" size={14} color="#9ca3af" />
         </div>
-        <h4 className="text-md text-moBlack mb-1 font-serif">{entry.title}</h4>
-        <p className="text-xs text-moBrown/80 truncate">{entry.content}</p>
+        <h4 className="text-md text-[var(--mo-black)] mb-1 font-serif">{entry.title}</h4>
+        <p className="text-xs text-[var(--mo-brown-80)] truncate">{entry.content}</p>
       </div>
     </div>,
     document.body   // ← 卡片掛在這裡，脫離所有 3D 容器
@@ -97,7 +97,7 @@ const InteractiveGalaxy = ({ diaries }) => {
       className="w-full h-full flex items-center justify-center overflow-hidden [perspective:1000px] relative"
       onMouseMove={handleMouseMove}
     >
-      <div className="absolute top-6 left-6 text-m text-moBrown opacity-50 flex items-center gap-2">
+      <div className="absolute top-6 left-6 text-m text-[var(--mo-cream-80)] opacity-50 flex items-center gap-2">
         <LocalIcon name="chat" size={14} color="currentColor" />
         滑鼠懸停星星可暫停並查看日記
       </div>
@@ -108,14 +108,14 @@ const InteractiveGalaxy = ({ diaries }) => {
           {hasTodayDiary ? (
             <>
               {/* 如果今天已經有寫日記 */}
-              <p className="text-sm font-bold text-moOlive font-serif">今日星球已點亮！</p>
-              <p className="text-xs text-moBrown/50 mt-1">去看看其他日子的回憶吧</p>
+              <p className="text-sm font-bold text-[var(--mo-cream)] font-serif">今日星球已點亮！</p>
+              <p className="text-xs text-[var(--mo-brown-80)] mt-1">去看看其他日子的回憶吧</p>
             </>
           ) : (
             <>
               {/* 如果今天還沒寫日記 (草圖樣式) */}
-              <p className="text-sm font-bold text-moBrown/60 font-serif">欸呀！主星系還沒有添加星球</p>
-              <p className="text-xs text-moBrown/40 mt-1">試著添加今日星球吧！</p>
+              <p className="text-sm font-bold text-[var(--mo-brown-80)] font-serif">欸呀！主星系還沒有添加星球</p>
+              <p className="text-xs text-[var(--mo-brown-80)] mt-1">試著添加今日星球吧！</p>
             </>
           )}
         </div>
@@ -123,7 +123,7 @@ const InteractiveGalaxy = ({ diaries }) => {
         {/* 圓形按鈕：懸停時箭頭會有往右推的小動畫 */}
         <button 
           onClick={() => navigate('/diary/new')}
-          className="w-14 h-14 rounded-full border border-moBlack bg-transparent flex items-center justify-center text-moBlack hover:bg-moOlive hover:text-white hover:border-moOlive transition-colors shadow-sm group cursor-pointer"
+          className="w-14 h-14 rounded-full border border-[var(--mo-black)] bg-transparent flex items-center justify-center text-[var(--mo-black)] hover:bg-[var(--mo-olive)] hover:text-white hover:border-[var(--mo-olive)] transition-colors shadow-sm group cursor-pointer"
         >
           <span className="group-hover:translate-x-1 transition-transform">
             <LocalIcon name="arrowRight" size={24} color="currentColor" />
@@ -135,8 +135,8 @@ const InteractiveGalaxy = ({ diaries }) => {
       <div className="relative w-[500px] h-[500px] flex items-center justify-center [transform:rotateX(45deg)] [transform-style:preserve-3d]">
 
         {/* 中心主星 */}
-        <div className="absolute w-28 h-28 bg-[#FFFFFF] rounded-full shadow-[0_0_80px_rgba(250,255,184,0.6)] flex items-center justify-center z-20 [transform:rotateX(-45deg)] border border-moBrown/20">
-          <span className="text-moBrown font-bold tracking-wider drop-shadow-md font-serif text-lg">{monthName}</span>
+        <div className="absolute w-28 h-28 bg-[#FFFFFF] rounded-full shadow-[0_0_80px_rgba(250,255,184,0.6)] flex items-center justify-center z-20 [transform:rotateX(-45deg)] border border-[var(--mo-brown-20)]">
+          <span className="text-[var(--mo-brown)] font-bold tracking-wider drop-shadow-md font-serif text-lg">{monthName}</span>
         </div>
 
         {/* 2. 迴圈印出 1 到 31 號的軌道 */}
@@ -170,7 +170,7 @@ const InteractiveGalaxy = ({ diaries }) => {
             return BASE + LOG_SCALE * logCurve * spread + jitter;
           };
 
-          // ─── 各軌道的預估大小（讓你有感覺）────────────────────────────
+          // ─── 各軌道的預估大小 ────────────────────────────
           // index 0  → ~160px   （貼著主星）
           // index 4  → ~330px
           // index 9  → ~530px   （約畫布邊緣）
@@ -187,7 +187,7 @@ const InteractiveGalaxy = ({ diaries }) => {
 
           // ─── 軌道與公轉 ───────────────────────────────────
 
-          // 3. 軌道縮放邏輯：指數擴張 + 自然微調 (Generative Art 技巧)
+          // 3. 軌道縮放邏輯：指數擴張 + 自然微調 (Generative Art)
           const orbitSize = getOrbitSize(index);
           const animationDuration = getAnimationDuration(index);
           
@@ -209,7 +209,7 @@ const InteractiveGalaxy = ({ diaries }) => {
               }}
               className={`absolute border rounded-full 
                 animate-spin [transform-style:preserve-3d] 
-                ${entry ? 'border-moBrown/20' : 'border-moBrown/20'}`} // 有日記的軌道比較明顯，沒有日記的軌道淡一點
+                ${entry ? 'border-[var(--color-orbit)]' : 'border-[var(--color-orbit)]'}`} // 有日記的軌道比較明顯，沒有日記的軌道淡一點
             >
               <div
                 style={{
@@ -225,7 +225,7 @@ const InteractiveGalaxy = ({ diaries }) => {
                   {entry ? (
                     <button
                       style={{ background: entry.color }}
-                      className="absolute -translate-x-1/2 -translate-y-1/2 w-6 h-6 rounded-full border-2 border-white shadow-[0_0_15px_rgba(255,255,255,0.8)] transition-transform duration-300 hover:scale-150 cursor-pointer"
+                      className="absolute -translate-x-1/2 -translate-y-1/2 w-6 h-6 rounded-full border-2 border-[var(--mo-brown)] shadow-[0_0_15px_rgba(255,255,255,0.8)] transition-transform duration-300 hover:scale-150 cursor-pointer"
                       onMouseEnter={() => {
                         setHoveredEntry(entry);
                         setIsPaused(true);
@@ -238,7 +238,9 @@ const InteractiveGalaxy = ({ diaries }) => {
                     />
                   ) : (
                     <button
-                      className="absolute -translate-x-1/2 -translate-y-1/2 w-3 h-3 rounded-full border border-moBrown/30 bg-white/20 transition-all duration-300 hover:scale-150 hover:bg-white hover:border-white cursor-pointer"
+                      className="absolute -translate-x-1/2 -translate-y-1/2 w-3 h-3 rounded-full 
+                                 border border-[var(--color-planet)] bg-white/20 
+                                 transition-all duration-300 hover:scale-150 hover:bg-white hover:border-white cursor-pointer"
                       onClick={() => navigate('/diary/new')} 
                       title={`新增 ${currentMonthNum}/${day} 的日記`}
                     />

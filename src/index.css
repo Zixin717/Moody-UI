@@ -9,11 +9,14 @@
     /* 淺色模式 -> 銀河白底 */
     --mo-cream: #FBF9EA; /* 卡片顏色 */
     --mo-cream-80: rgba(251, 249, 234, 0.8); /* 80% 奶油白 */
+    --mo-cream-20: rgba(251, 249, 234, 0.2); /* 相片底色 */
 
     --mo-teal: #AAD0C6;
     --mo-olive: #A1A34E;
+
     --mo-brown: #786C56;
     --mo-brown-80: rgba(120, 108, 86, 0.8);  /* 80% 深褐咖 */
+    --mo-brown-20: rgba(120, 108, 86, 0.2);  /* 20% 深褐咖，用於指針 */ 
 
     --mo-black: #000000;
     --mo-azure: #007FFF;
@@ -24,6 +27,10 @@
     --color-star-core: #A1A34E;
     --color-orbit: rgba(0, 0, 0, 0.1);
     --color-topbar: #A1A34E;
+
+    --color-planet: #96969675;  /* 行星顏色 */
+    --color-glaxy: #FDFBF7;     /* 主題背景色 */
+    --color-text-muted: #786C56;  /* 次要文字顏色 -> Today 欄位的 Tag 列 */
   }
 
   body.theme-dark {
@@ -31,12 +38,14 @@
 
     --mo-cream: #2D2D2D;  /* 奶油白變深灰底色 */
     --mo-cream-80: rgba(45, 45, 45, 0.8);    /* 80% 深灰底 */
+    --mo-cream-20: rgba(45, 45, 45, 0.2);    /* 相片底色 */
 
     --mo-teal: #4A6B63;   /* 淺灰藍變深灰綠 */
     --mo-olive: #adadad;  /* 橄欖綠變亮淺綠，在暗色背景更明顯 */
 
     --mo-brown: #E3E2D8;  /* 深咖文字變淺色文字 */
     --mo-brown-80: rgba(227, 226, 216, 0.8); /* 80% 淺色字 */
+    --mo-brown-20: rgba(227, 226, 216, 0.2); /* 20% 淺色字，用於指針 */ 
 
     --mo-black: #FDFBF7;  /* 純黑邊框變淺色邊框 */
     --mo-azure: #4D9FFF;  /* 天空藍稍微調亮 */
@@ -45,9 +54,14 @@
     --color-bg-space: #10131a;
     --color-text-main: #FDFBF7;
     --color-star-core: #FAFFB8;
-    --color-orbit: rgba(255, 255, 255, 0.2);
+    --color-orbit: rgba(182, 182, 182, 0.2);
 
     --color-topbar: #4a4a46;
+
+    --color-glaxy: #10131a;  /* 主題背景色變深夜空黑 */
+    --color-planet: #909090;  /* 行星顏色變深灰 */
+
+    --color-text-muted: #b7b7b7; /* 次要文字顏色 -> Today 欄位的 Tag 列 */
 
   }
 }

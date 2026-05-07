@@ -90,7 +90,7 @@ const LandingPage = () => {
                 <div className="absolute w-40 h-40 border border-white/20 rounded-full animate-spin [animation-duration:6s] direction-reverse">
                     <div className="absolute bottom-0 left-1/4 w-3 h-3 bg-[#D4E2A5] rounded-full shadow-[0_0_15px_#D4E2A5]"></div>
                 </div>
-                <div className="text-white/50 text-sm z-10">這裡可以放入 SolarSystemRoom</div>
+                
             </div>
 
             {/* 右上角的 Login 按鈕 (這是一個浮動在卡片右上角的按鈕) */}
