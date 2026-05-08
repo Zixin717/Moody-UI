@@ -1,36 +1,6 @@
-代辦事項：
-1. 拆公版
-2. 實現身分認證＆修改密碼功能
-3. 實現主題切換功能
-4. 實現通知開啟關閉功能
-5. 實現刪除帳號功能
-6. 實現登入時忘記密碼功能
-
-/* =========================================
-            日記
-*/===========================================
-
 /* =========================================================
    Diary + Emotion Task merged database schema
    Target: SQL Server
-
-   Run this file on any SQL Server instance to create:
-   - Database: DiaryTaskDB
-   - Shared user table: dbo.[User]
-   - Diary tables
-   - Task tables
-
-   Relationship summary:
-   dbo.[User] 1 -> many dbo.Diary
-   dbo.[User] 1 -> many dbo.Tag (custom tags)
-   dbo.[User] 1 -> many dbo.DiaryReaction
-   dbo.[User] 1 -> many dbo.task
-   dbo.Diary 1 -> 0/1 dbo.DiaryNormal
-   dbo.Diary 1 -> 0/1 dbo.DiaryMood
-   dbo.Diary many -> many dbo.Mood through dbo.DiaryMoodSelection
-   dbo.Diary many -> many dbo.Tag through dbo.DiaryTag
-   dbo.task 1 -> 0/1 dbo.task_schedule_rule
-   dbo.task 1 -> many dbo.task_checkin_log
    ========================================================= */
 
 SET XACT_ABORT ON;
@@ -87,6 +57,9 @@ CREATE TABLE dbo.[User]
         CONSTRAINT DF_User_IsNotificationEnabled DEFAULT (CONVERT(BIT, 0)),
     Theme                 NVARCHAR(50) NOT NULL
         CONSTRAINT DF_User_Theme DEFAULT (N''),
+    IsDeleted             BIT NOT NULL 
+        CONSTRAINT DF_User_IsDeleted DEFAULT (CONVERT(BIT, 0)),
+    DeletedAt             DATETIME2 NULL,
 
     CONSTRAINT PK_User PRIMARY KEY (UserId),
     CONSTRAINT UQ_User_Email UNIQUE (Email),
@@ -102,13 +75,13 @@ GO
    ========================================================= */
 CREATE TABLE dbo.Diary
 (
-    DiaryId      BIGINT IDENTITY(1,1) NOT NULL, // 每篇日記的 ID （第一筆會是 ID：1）
-    UserId       INT NOT NULL,                  // UserId -> 連 [User.cs]
-    TemplateType VARCHAR(20) NOT NULL,          // 模式 -> normal and mood
-    PreviewText  NVARCHAR(300) NULL,            // 
-    DiaryDate    DATE NOT NULL,                 // 抓這個 -> 代表日期
+    DiaryId      BIGINT IDENTITY(1,1) NOT NULL, 
+    UserId       INT NOT NULL,                  
+    TemplateType VARCHAR(20) NOT NULL,          
+    PreviewText  NVARCHAR(300) NULL,             
+    DiaryDate    DATE NOT NULL,                 
     DiaryTime    TIME(0) NOT NULL,
-    WeatherType  VARCHAR(20) NULL,              // 抓這個 -> 天氣
+    WeatherType  VARCHAR(20) NULL,              
     Visibility   VARCHAR(20) NOT NULL
         CONSTRAINT DF_Diary_Visibility DEFAULT ('private'),
     Status       VARCHAR(20) NOT NULL
@@ -121,7 +94,7 @@ CREATE TABLE dbo.Diary
 
     CONSTRAINT PK_Diary PRIMARY KEY (DiaryId),
     CONSTRAINT FK_Diary_User
-        FOREIGN KEY (UserId) REFERENCES dbo.[User](UserId),
+        FOREIGN KEY (UserId) REFERENCES dbo.[User],
     CONSTRAINT CK_Diary_TemplateType
         CHECK (TemplateType IN ('normal', 'mood')),
     CONSTRAINT CK_Diary_WeatherType
@@ -163,9 +136,9 @@ GO
 CREATE TABLE dbo.DiaryMood
 (
     DiaryId     BIGINT NOT NULL,
-    EnergyValue TINYINT NULL, // 抓這個 -> 右上角 改 1~10
-    StressValue TINYINT NULL, // 抓這個 -> 右上角 改 1~10
-    SleepValue  TINYINT NULL, // 抓這個 -> 右上角 改 1~10
+    EnergyValue TINYINT NULL, 
+    StressValue TINYINT NULL, 
+    SleepValue  TINYINT NULL, 
     EventNote   NVARCHAR(500) NULL,
     ThoughtNote NVARCHAR(500) NULL,
     NeedNote    NVARCHAR(500) NULL,
@@ -200,7 +173,7 @@ GO
 CREATE TABLE dbo.DiaryMoodSelection
 (
     DiaryId BIGINT NOT NULL,
-    MoodId  VARCHAR(20) NOT NULL, // 抓這個 -> 右側 -> 當天心情記錄
+    MoodId  VARCHAR(20) NOT NULL, 
 
     CONSTRAINT PK_DiaryMoodSelection PRIMARY KEY (DiaryId, MoodId),
     CONSTRAINT FK_DiaryMoodSelection_Diary
@@ -224,7 +197,7 @@ CREATE TABLE dbo.Tag
 
     CONSTRAINT PK_Tag PRIMARY KEY (TagId),
     CONSTRAINT FK_Tag_User
-        FOREIGN KEY (UserId) REFERENCES dbo.[User](UserId),
+        FOREIGN KEY (UserId) REFERENCES dbo.[User],
     CONSTRAINT CK_Tag_TagName_NotBlank
         CHECK (LEN(LTRIM(RTRIM(TagName))) > 0),
     CONSTRAINT CK_Tag_TagType
@@ -247,7 +220,7 @@ GO
 CREATE TABLE dbo.DiaryTag
 (
     DiaryId BIGINT NOT NULL,
-    TagId   VARCHAR(20) NOT NULL, // 抓這個 -> Tag
+    TagId   VARCHAR(20) NOT NULL, 
 
     CONSTRAINT PK_DiaryTag PRIMARY KEY (DiaryId, TagId),
     CONSTRAINT FK_DiaryTag_Diary
@@ -267,7 +240,7 @@ CREATE TABLE dbo.DiaryMedia
     MediaId   VARCHAR(20) NOT NULL,
     DiaryId   BIGINT NOT NULL,
     MediaType VARCHAR(20) NOT NULL,
-    FileUrl   NVARCHAR(300) NOT NULL, // 抓這個 -> 右下角 Photo
+    FileUrl   NVARCHAR(300) NOT NULL, 
     CreatedAt DATETIME2 NOT NULL
         CONSTRAINT DF_DiaryMedia_CreatedAt DEFAULT (SYSDATETIME()),
 
@@ -301,7 +274,7 @@ CREATE TABLE dbo.DiaryReaction
         FOREIGN KEY (DiaryId) REFERENCES dbo.Diary(DiaryId)
         ON DELETE CASCADE,
     CONSTRAINT FK_DiaryReaction_User
-        FOREIGN KEY (UserId) REFERENCES dbo.[User](UserId),
+        FOREIGN KEY (UserId) REFERENCES dbo.[User],
     CONSTRAINT CK_DiaryReaction_ReactionType
         CHECK (ReactionType IN ('like', 'love', 'hug', 'empathy', 'cheer')),
     CONSTRAINT UQ_DiaryReaction_Diary_User
@@ -331,7 +304,7 @@ CREATE TABLE dbo.task
 
     CONSTRAINT PK_task PRIMARY KEY (task_id),
     CONSTRAINT FK_task_User
-        FOREIGN KEY (user_id) REFERENCES dbo.[User](UserId),
+        FOREIGN KEY (user_id) REFERENCES dbo.[User],
     CONSTRAINT CK_task_title_not_blank
         CHECK (LEN(LTRIM(RTRIM(title))) > 0),
     CONSTRAINT CK_task_rhythm_type
@@ -396,160 +369,3 @@ GO
 
 PRINT N'DiaryTaskDB schema created successfully.';
 GO
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-{/* 確認 Checkbox */}
-<label 
-  className="flex items-center gap-3 
-  cursor-pointer group mt-4"
-  
-  onClick={() => setIsDeleteConfirmed(!isDeleteConfirmed)} // 🌟 點擊切換狀態
->
-
-  <div className={`w-5 h-5 
-  border-2 rounded-md 
-  flex items-center justify-center 
-  transition-colors 
-  ${isDeleteConfirmed ? 
-  'border-red-500 bg-red-500' : 'border-red-300 group-hover:border-red-500'}`}>
-    {/* 🌟 如果勾選，顯示白色勾勾 */}
-    {isDeleteConfirmed && (
-      <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="3">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-      </svg>
-    )}
-  </div>
-  <span className="text-sm font-medium text-red-500 group-hover:text-red-700">我已閱讀警告，並確認要刪除帳號。</span>
-</label>
-
-{/* 下方 Delete 按鈕 */}
-<div className="flex justify-center gap-4 mt-8 w-full">
-  <button 
-    onClick={handleDeleteAccount} // 🌟 綁定刪除事件
-    // 🌟 若未勾選，可以讓按鈕變灰且不能按，增加 UX 質感
-    className={`px-8 py-2 rounded-full border transition-colors shadow-sm font-bold ${isDeleteConfirmed ? 'border-moBlack bg-red-500 text-white hover:bg-red-700' : 'border-gray-300 bg-gray-200 text-gray-400 cursor-not-allowed'}`}
-    disabled={!isDeleteConfirmed}
-  >
-    Delete
-  </button>
-</div>
-
-
-MainLayout.jsx
--> 主切版設計
-
-mockEntries.js 
--> 假日記資料
-
-StarLifecycleCanvas.jsx 
-負責 Idle -> Explode -> Collapse 粒子動畫，使用 Canvas
-
-InteractiveGalaxy.jsx
--> 負責坍縮完成後的太陽系橢圓展示與點擊，使用 CSS 3D，基於原本的 code 改良。
-
-HomePage.jsx
--> 大廳，負責排版、導覽列、主題切換與控制動畫流程
-
-VerifyPage.jsx
--> 更改密碼時跳出的驗證頁
-
-
-
-
-
-
-
-
-備份：
-{/* 透明遮罩 */}
-      {/* {openMenu && <div className="fixed inset-0 z-40" onClick={() => setOpenMenu(null)} />} */}
-
-      {/* ===== 頂層列表 (Top_Bar)  ===== */}
-      {/* <header className="relative z-50 bg-moOlive border-b border-moBlack text-white flex items-center justify-between px-8 py-4 mb-3 flex-shrink-0"> */}
-        
-        {/* Logo */}
-        {/* <Link to="/home" className="text-[30px] text-moBlack font-bold font-serif cursor-pointer hover:text-moCitron transition-colors">
-          Moody
-        </Link> */}
-
-        {/* 搜尋列 */}
-        {/* <div className="relative">
-          <div className="flex items-center bg-white border border-moBlack focus-within:border-[#A1A34E] focus-within:ring-4 focus-within:ring-[#A1A34E]/20 transition-all rounded-full px-5 py-2 w-[700px] h-[50px] shadow-sm">
-            <Icon name="moon" size={18} color="#9ca3af" />
-            <input
-              type="text"
-              placeholder="How can we support you?"
-              className="ml-3 outline-none w-full text-sm bg-transparent placeholder-gray-400 text-gray-700"
-              onClick={() => setOpenMenu('search')}
-            />
-          </div>
-          
-        </div> */}
-
-        {/* 右側：通知 + 頭貼 (通知欄位保留！) */}
-        {/* <div className="flex gap-4"> */}
-          
-          {/* 通知按鈕
-          <div className="relative">
-            <button 
-              onClick={() => setOpenMenu(openMenu === 'notif' ? null : 'notif')}
-              className="w-10 h-10 flex items-center justify-center text-gray-400 hover:text-moOlive rounded-full bg-white border border-moBlack shadow-sm transition-colors relative"
-            >
-              <Icon name="star" size={18} color="currentColor"/>
-              <span className="absolute top-0 right-0 w-3 h-3 bg-red-400 border border-white rounded-full"></span>
-            </button>
-            {openMenu === 'notif' && (
-              <div className="absolute top-[50px] right-0 w-64 bg-[#FDFBF7] border border-moBlack rounded-xl shadow-lg p-2 z-50">
-                <p className="text-xs text-gray-400 font-bold px-4 py-2">Recent</p>
-                <ul className="flex flex-col gap-1">
-                  {notifications.map(notif => (
-                    <li key={notif.id}>
-                      <Link to="/" className={`block px-4 py-3 rounded-lg text-sm border transition-all ${notif.unread ? 'bg-[#D4E2A5]/30 border-[#A1A34E]/50 font-bold text-gray-800' : 'bg-transparent border-transparent text-gray-600 hover:bg-gray-100'}`}>
-                        {notif.unread ? '● ' : '○ '}{notif.text}
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
-          </div> */}
-
-          {/* 頭貼按鈕
-          <div className="relative">
-            <button 
-              onClick={() => setOpenMenu(openMenu === 'profile' ? null : 'profile')}
-              className="w-10 h-10 flex items-center justify-center text-gray-400 hover:text-moOlive rounded-full bg-white border border-moBlack shadow-sm transition-colors"
-            >
-              <Icon name="user" size={18} color="currentColor"/>
-            </button>
-            {openMenu === 'profile' && (
-              <div className="absolute top-[50px] right-0 w-48 bg-[#FDFBF7] border border-moBlack rounded-xl shadow-lg py-2 z-50">
-                <Link to="/profile" className="block px-6 py-3 text-sm text-gray-700 bg-moAzure/20 text-[#3d5a10] font-bold">帳戶</Link>
-                <Link to="/" className="block px-6 py-2 text-sm text-gray-600 hover:bg-gray-100 transition-colors">登出</Link>
-              </div>
-            )}
-          </div>
-        </div> 
-      </header> */}
