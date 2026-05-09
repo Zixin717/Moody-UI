@@ -27,6 +27,8 @@ const DiaryCard = ({ entry, pos, onClick }) => {
   // ReactDOM.createPortal(內容, 掛載點)
   // 把卡片直接掛到 document.body，完全脫離 3D 堆疊空間
   return ReactDOM.createPortal(
+
+  
     <div
       // fixed：相對於視窗定位，不受任何父層影響
       // pointer-events-none 防止卡片本身攔截到 mouseleave
@@ -43,8 +45,9 @@ const DiaryCard = ({ entry, pos, onClick }) => {
       <div className="bg-white/95 backdrop-blur-md p-4 rounded-2xl border border-[var(--mo-brown-80)] shadow-xl w-[220px] animate-fade-in-up hover:bg-[var(--mo-cream)] transition-colors">
         <div className="flex justify-between items-center mb-1">
           <div className="flex items-center gap-2">
-            <LocalIcon name="heart" size={14} color={entry.color} />
-            <span className="text-[12px] text-gray-500 font-serif">{entry.date}</span>
+            <span className="text-[12px] text-gray-500 font-serif"> {entry.date} {/* 只顯示日期 */}</span>
+            <h4>{entry.title ?? '點擊查看'}</h4>
+            <p className="text-xs">{entry.previewText ?? ''}</p>
           </div>
           <LocalIcon name="arrowUpRight" size={14} color="#9ca3af" />
         </div>
@@ -94,172 +97,187 @@ const InteractiveGalaxy = ({ diaries }) => {
   return (
     // onMouseMove 掛在整個 Galaxy 容器，隨時追蹤滑鼠位置
     <div
-      className="w-full h-full flex items-center justify-center overflow-hidden [perspective:1000px] relative"
+      className="w-full h-full flex items-center justify-center ..."
       onMouseMove={handleMouseMove}
+      onMouseEnter={() => setIsPaused(true)}   // 進入視窗就暫停
+      onMouseLeave={() => {                    // 離開視窗就恢復
+        setIsPaused(false);
+        setHoveredEntry(null);
+      }}
     >
-      <div className="absolute top-6 left-6 text-m text-[var(--mo-cream-80)] opacity-50 flex items-center gap-2">
-        <LocalIcon name="chat" size={14} color="currentColor" />
-        滑鼠懸停星星可暫停並查看日記
-      </div>
-
-      {/* 右下角：新增日記按鈕與動態提示文字 */}
-      <div className="absolute bottom-8 right-8 flex items-center gap-5 z-40">
-        <div className="text-right">
-          {hasTodayDiary ? (
-            <>
-              {/* 如果今天已經有寫日記 */}
-              <p className="text-sm font-bold text-[var(--mo-cream)] font-serif">今日星球已點亮！</p>
-              <p className="text-xs text-[var(--mo-brown-80)] mt-1">去看看其他日子的回憶吧</p>
-            </>
-          ) : (
-            <>
-              {/* 如果今天還沒寫日記 (草圖樣式) */}
-              <p className="text-sm font-bold text-[var(--mo-brown-80)] font-serif">欸呀！主星系還沒有添加星球</p>
-              <p className="text-xs text-[var(--mo-brown-80)] mt-1">試著添加今日星球吧！</p>
-            </>
-          )}
-        </div>
-        
-        {/* 圓形按鈕：懸停時箭頭會有往右推的小動畫 */}
-        <button 
-          onClick={() => navigate('/diary/new')}
-          className="w-14 h-14 rounded-full border border-[var(--mo-black)] bg-transparent flex items-center justify-center text-[var(--mo-black)] hover:bg-[var(--mo-olive)] hover:text-white hover:border-[var(--mo-olive)] transition-colors shadow-sm group cursor-pointer"
-        >
-          <span className="group-hover:translate-x-1 transition-transform">
-            <LocalIcon name="arrowRight" size={24} color="currentColor" />
-          </span>
-        </button>
-      </div>
-
-      {/* 3D 太陽系轉盤 */}
-      <div className="relative w-[500px] h-[500px] flex items-center justify-center [transform:rotateX(45deg)] [transform-style:preserve-3d]">
-
-        {/* 中心主星 */}
-        <div className="absolute w-28 h-28 bg-[#FFFFFF] rounded-full shadow-[0_0_80px_rgba(250,255,184,0.6)] flex items-center justify-center z-20 [transform:rotateX(-45deg)] border border-[var(--mo-brown-20)]">
-          <span className="text-[var(--mo-brown)] font-bold tracking-wider drop-shadow-md font-serif text-lg">{monthName}</span>
+      <div
+        className="w-full h-full flex items-center justify-center overflow-hidden [perspective:1000px] relative"
+        onMouseMove={handleMouseMove}
+      >
+        <div className="absolute top-6 left-6 text-m text-[var(--mo-cream-80)] opacity-50 flex items-center gap-2">
+          <LocalIcon name="chat" size={14} color="currentColor" />
+          滑鼠懸停星星可暫停並查看日記
         </div>
 
-        {/* 2. 迴圈印出 1 到 31 號的軌道 */}
-        {monthDaysArray.map((day, index) => {
-          const dateString = `${currentYear} / ${String(currentMonthNum).padStart(2, '0')} / ${String(day).padStart(2, '0')}`;
-          const entry = diaries.find(d => d.date === dateString); 
+        {/* 右下角：新增日記按鈕與動態提示文字 */}
+        <div className="absolute bottom-8 right-8 flex items-center gap-5 z-40">
+          <div className="text-right">
+            {hasTodayDiary ? (
+              <>
+                {/* 如果今天已經有寫日記 */}
+                <p className="text-sm font-bold text-[var(--mo-cream)] font-serif">今日星球已點亮！</p>
+                <p className="text-xs text-[var(--mo-brown-80)] mt-1">去看看其他日子的回憶吧</p>
+              </>
+            ) : (
+              <>
+                {/* 如果今天還沒寫日記 (草圖樣式) */}
+                <p className="text-sm font-bold text-[var(--mo-brown-80)] font-serif">欸呀！主星系還沒有添加星球</p>
+                <p className="text-xs text-[var(--mo-brown-80)] mt-1">試著添加今日星球吧！</p>
+              </>
+            )}
+          </div>
           
-          // ─── 核心公式 ────────────────────────────────────────────
-          //
-          // 目標：30 條軌道，內圈密集、外圈自然散開，超出畫面也沒關係。
-          // 公式：orbitSize = BASE + LOG_SCALE * Math.log(index + 1) * (index + 1) ^ POWER
-          //
-          // 參數 -> 可以自由調整：
-          const BASE       = 160;   // 主星到第一條軌道的距離（單位 px）
-          const LOG_SCALE  = 55;    // 整體「散開速度」，越大外圈越快飛出去
-          const POWER      = 0.72;  // 指數：< 1 讓外圈間距緩慢遞增，= 1 就是純對數
+          {/* 圓形按鈕：懸停時箭頭會有往右推的小動畫 */}
+          <button 
+            onClick={() => navigate('/diary/new')}
+            className="w-14 h-14 rounded-full border border-[var(--mo-black)] bg-transparent flex items-center justify-center text-[var(--mo-black)] hover:bg-[var(--mo-olive)] hover:text-white hover:border-[var(--mo-olive)] transition-colors shadow-sm group cursor-pointer"
+          >
+            <span className="group-hover:translate-x-1 transition-transform">
+              <LocalIcon name="arrowRight" size={24} color="currentColor" />
+            </span>
+          </button>
+        </div>
 
-          // ─── 套用到元件 ──────────────────────────────────────────
-          const getOrbitSize = (index) => {
-            // Math.log(index + 1)：對數曲線，index=0 時輸出 0，之後快速增大然後趨緩
-            // Math.pow(index + 1, POWER)：再乘上一個緩增指數，讓外圈繼續「往外推」
-            // 兩者相乘：結合了對數的「內密」和指數的「外疏」
-            const logCurve = Math.log(index + 1);
-            const spread   = Math.pow(index + 1, POWER);
+        {/* 3D 太陽系轉盤 */}
+        <div className="relative w-[500px] h-[500px] flex items-center justify-center [transform:rotateX(45deg)] [transform-style:preserve-3d]">
+
+          {/* 中心主星 */}
+          <div className="absolute w-28 h-28 bg-[#FFFFFF] rounded-full shadow-[0_0_80px_rgba(250,255,184,0.6)] flex items-center justify-center z-20 [transform:rotateX(-45deg)] border border-[var(--mo-brown-20)]">
+            <span className="text-[var(--mo-brown)] font-bold tracking-wider drop-shadow-md font-serif text-lg">{monthName}</span>
+          </div>
+
+          {/* 2. 迴圈印出 1 到 31 號的軌道 */}
+          {monthDaysArray.map((day, index) => {
+            const dateString = `${currentYear} / ${String(currentMonthNum).padStart(2, '0')} / ${String(day).padStart(2, '0')}`;
+            const entry = diaries.find(d => d.date === dateString); 
             
-            // jitter：讓每條軌道有 ±6px 的錯落感，避免太機械。
-            // 用 sin 而不是 Math.random()，原因是 random() 每次 render 都會變，
-            // 而 sin(index) 的結果是固定的（同一個 index 永遠同一個偏移量）
-            const jitter = Math.sin(index * 1.7) * 6;
+            // ─── 核心公式 ────────────────────────────────────────────
+            //
+            // 目標：30 條軌道，內圈密集、外圈自然散開，超出畫面也沒關係。
+            // 公式：orbitSize = BASE + LOG_SCALE * Math.log(index + 1) * (index + 1) ^ POWER
+            //
+            // 參數 -> 可以自由調整：
+            const BASE       = 160;   // 主星到第一條軌道的距離（單位 px）
+            const LOG_SCALE  = 55;    // 整體「散開速度」，越大外圈越快飛出去
+            const POWER      = 0.72;  // 指數：< 1 讓外圈間距緩慢遞增，= 1 就是純對數
+
+            // ─── 套用到元件 ──────────────────────────────────────────
+            const getOrbitSize = (index) => {
+              // Math.log(index + 1)：對數曲線，index=0 時輸出 0，之後快速增大然後趨緩
+              // Math.pow(index + 1, POWER)：再乘上一個緩增指數，讓外圈繼續「往外推」
+              // 兩者相乘：結合了對數的「內密」和指數的「外疏」
+              const logCurve = Math.log(index + 1);
+              const spread   = Math.pow(index + 1, POWER);
+              
+              // jitter：讓每條軌道有 ±6px 的錯落感，避免太機械。
+              // 用 sin 而不是 Math.random()，原因是 random() 每次 render 都會變，
+              // 而 sin(index) 的結果是固定的（同一個 index 永遠同一個偏移量）
+              const jitter = Math.sin(index * 1.7) * 6;
+              
+              return BASE + LOG_SCALE * logCurve * spread + jitter;
+            };
+
+            // ─── 各軌道的預估大小 ────────────────────────────
+            // index 0  → ~160px   （貼著主星）
+            // index 4  → ~330px
+            // index 9  → ~530px   （約畫布邊緣）
+            // index 14 → ~730px   （開始超出畫面）
+            // index 20 → ~1000px  （大部分看不到，只剩弧線）
+            // index 29 → ~1380px  （完全超出，但動畫依然在跑）
+
+            // ─── 轉速公式（同步調整）────────────────────────────────────
+            // 內圈快、外圈慢，且差異要夠大才有層次感
+            const getAnimationDuration = (index) => {
+              // 從 12s（最內圈）到 90s（最外圈），用平方根讓速度不要掉太快
+              return 12 + Math.sqrt(index) * 14;
+            };
+
+            // ─── 軌道與公轉 ───────────────────────────────────
+
+            // 3. 軌道縮放邏輯：指數擴張 + 自然微調 (Generative Art)
+            const orbitSize = getOrbitSize(index);
+            const animationDuration = getAnimationDuration(index);
             
-            return BASE + LOG_SCALE * logCurve * spread + jitter;
-          };
+            // 4. 統一公轉方向 -> 所有行星同向環繞，符合自然法則
+            const orbitDirection = 'normal';
+            const planetDirection = 'reverse'; // 星星本體永遠要反向自轉，才能保持面向鏡頭。
 
-          // ─── 各軌道的預估大小 ────────────────────────────
-          // index 0  → ~160px   （貼著主星）
-          // index 4  → ~330px
-          // index 9  → ~530px   （約畫布邊緣）
-          // index 14 → ~730px   （開始超出畫面）
-          // index 20 → ~1000px  （大部分看不到，只剩弧線）
-          // index 29 → ~1380px  （完全超出，但動畫依然在跑）
+            
 
-          // ─── 轉速公式（同步調整）────────────────────────────────────
-          // 內圈快、外圈慢，且差異要夠大才有層次感
-          const getAnimationDuration = (index) => {
-            // 從 12s（最內圈）到 90s（最外圈），用平方根讓速度不要掉太快
-            return 12 + Math.sqrt(index) * 14;
-          };
-
-          // ─── 軌道與公轉 ───────────────────────────────────
-
-          // 3. 軌道縮放邏輯：指數擴張 + 自然微調 (Generative Art)
-          const orbitSize = getOrbitSize(index);
-          const animationDuration = getAnimationDuration(index);
-          
-          // 4. 統一公轉方向 -> 所有行星同向環繞，符合自然法則
-          const orbitDirection = 'normal';
-          const planetDirection = 'reverse'; // 星星本體永遠要反向自轉，才能保持面向鏡頭。
-
-          
-
-          return (
-            <div
-              key={day}
-              style={{
-                width: `${orbitSize}px`,
-                height: `${orbitSize}px`,
-                animationDuration: `${animationDuration}s`,
-                animationDirection: orbitDirection,
-                animationPlayState: isPaused ? 'paused' : 'running',
-              }}
-              className={`absolute border rounded-full 
-                animate-spin [transform-style:preserve-3d] 
-                ${entry ? 'border-[var(--color-orbit)]' : 'border-[var(--color-orbit)]'}`} // 有日記的軌道比較明顯，沒有日記的軌道淡一點
-            >
+            return (
               <div
+                key={day}
                 style={{
+                  width: `${orbitSize}px`,
+                  height: `${orbitSize}px`,
                   animationDuration: `${animationDuration}s`,
-                  animationDirection: planetDirection,
+                  animationDirection: orbitDirection,
                   animationPlayState: isPaused ? 'paused' : 'running',
                 }}
-                className="absolute top-0 left-1/2 w-0 h-0 animate-spin [transform-style:preserve-3d]"
+                className={`absolute border rounded-full 
+                  animate-spin [transform-style:preserve-3d] 
+                  ${entry ? 'border-[var(--color-orbit)]' : 'border-[var(--color-orbit)]'}`} // 有日記的軌道比較明顯，沒有日記的軌道淡一點
               >
-                <div className="absolute [transform:rotateX(-45deg)] [transform-style:flat]">
-                  
-                  {/* 判斷是否有日記 */}
-                  {entry ? (
-                    <button
-                      style={{ background: entry.color }}
-                      className="absolute -translate-x-1/2 -translate-y-1/2 w-6 h-6 rounded-full border-2 border-[var(--mo-brown)] shadow-[0_0_15px_rgba(255,255,255,0.8)] transition-transform duration-300 hover:scale-150 cursor-pointer"
-                      onMouseEnter={() => {
-                        setHoveredEntry(entry);
-                        setIsPaused(true);
-                      }}
-                      onMouseLeave={() => {
-                        setHoveredEntry(null);
-                        setIsPaused(false);
-                      }}
-                      onClick={() => navigate('/diary/blank')}
-                    />
-                  ) : (
-                    <button
-                      className="absolute -translate-x-1/2 -translate-y-1/2 w-3 h-3 rounded-full 
-                                 border border-[var(--color-planet)] bg-white/20 
-                                 transition-all duration-300 hover:scale-150 hover:bg-white hover:border-white cursor-pointer"
-                      onClick={() => navigate('/diary/new')} 
-                      title={`新增 ${currentMonthNum}/${day} 的日記`}
-                    />
-                  )}
+                <div
+                  style={{
+                    animationDuration: `${animationDuration}s`,
+                    animationDirection: planetDirection,
+                    animationPlayState: isPaused ? 'paused' : 'running',
+                  }}
+                  className="absolute top-0 left-1/2 w-0 h-0 animate-spin [transform-style:preserve-3d]"
+                >
+                  <div className="absolute [transform:rotateX(-45deg)] [transform-style:flat]">
+                    
+                    {/* 判斷是否有日記 */}
+                    {entry ? (
+                      <button
+                        style={{ background: entry.color }}
+                        className="absolute -translate-x-1/2 -translate-y-1/2 w-6 h-6 rounded-full border-2 border-[var(--mo-brown)] shadow-[0_0_15px_rgba(255,255,255,0.8)] transition-transform duration-300 hover:scale-150 cursor-pointer"
+                        onMouseEnter={() => { setHoveredEntry(entry); }}
+                        onMouseLeave={() => { setHoveredEntry(null); }}
+                        onClick={() => navigate(`/diary/${currentYear}-${String(currentMonthNum).padStart(2,'0')}-${String(day).padStart(2,'0')}`)}
+                      />
+                    ) : (
+                      <button
+                        className="absolute -translate-x-1/2 -translate-y-1/2 w-3 h-3 rounded-full 
+                                  border border-[var(--color-planet)] bg-white/20 
+                                  transition-all duration-300 hover:scale-150 hover:bg-white hover:border-white cursor-pointer"
+                          onMouseEnter={() => {
+                              // 卡片顯示
+                              setHoveredEntry({
+                                date: `${currentYear} / ${String(currentMonthNum).padStart(2,'0')} / ${String(day).padStart(2,'0')}`,
+                                title: null,
+                                previewText: null,
+                                color: 'var(--mo-brown-20)',  });
+                              setIsPaused(true);
+                          }}
+                          onMouseLeave={() => { setHoveredEntry(null); setIsPaused(false); }}
+                          onClick={() => navigate(`/diary/new?date=${currentYear}-${String(currentMonthNum).padStart(2,'0')}-${String(day).padStart(2,'0')}`)}
+                          title={`新增 ${currentMonthNum}/${day} 的日記`}
+                      />
+                    )}
 
+                  </div>
                 </div>
               </div>
-            </div>
-          );
-        })}
-      </div>
+            );
+          })}
+        </div>
 
-      <DiaryCard
-        entry={hoveredEntry}
-        pos={cardPos}
-        onClick={() => navigate('/diary/blank')}
-      />
+        <DiaryCard
+          entry={hoveredEntry}
+          pos={cardPos}
+          onClick={() => navigate('/diary/blank')}
+        />
+      </div>
     </div>
   );
+  
 };
 
 export default InteractiveGalaxy;

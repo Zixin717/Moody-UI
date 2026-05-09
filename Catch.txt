@@ -106,9 +106,9 @@ CREATE TABLE dbo.Diary
     UserId       INT NOT NULL,                  // UserId -> 連 [User.cs]
     TemplateType VARCHAR(20) NOT NULL,          // 模式 -> normal and mood
     PreviewText  NVARCHAR(300) NULL,            // 
-    DiaryDate    DATE NOT NULL,                 // 抓這個 -> 代表日期
+    DiaryDate    DATE NOT NULL,                 // 抓這個 -> 代表日期（已抓取）
     DiaryTime    TIME(0) NOT NULL,
-    WeatherType  VARCHAR(20) NULL,              // 抓這個 -> 天氣
+    WeatherType  VARCHAR(20) NULL,              // 抓這個 -> 天氣（先不抓）
     Visibility   VARCHAR(20) NOT NULL
         CONSTRAINT DF_Diary_Visibility DEFAULT ('private'),
     Status       VARCHAR(20) NOT NULL
@@ -163,9 +163,9 @@ GO
 CREATE TABLE dbo.DiaryMood
 (
     DiaryId     BIGINT NOT NULL,
-    EnergyValue TINYINT NULL, // 抓這個 -> 右上角 改 1~10
-    StressValue TINYINT NULL, // 抓這個 -> 右上角 改 1~10
-    SleepValue  TINYINT NULL, // 抓這個 -> 右上角 改 1~10
+    EnergyValue TINYINT NULL, // 抓這個 -> 右上角 改 1~10（已抓取）
+    StressValue TINYINT NULL, // 抓這個 -> 右上角 改 1~10（已抓取）
+    SleepValue  TINYINT NULL, // 抓這個 -> 右上角 改 1~10（已抓取）
     EventNote   NVARCHAR(500) NULL,
     ThoughtNote NVARCHAR(500) NULL,
     NeedNote    NVARCHAR(500) NULL,
@@ -247,7 +247,7 @@ GO
 CREATE TABLE dbo.DiaryTag
 (
     DiaryId BIGINT NOT NULL,
-    TagId   VARCHAR(20) NOT NULL, // 抓這個 -> Tag
+    TagId   VARCHAR(20) NOT NULL, // 抓這個 -> Tag（已抓取）
 
     CONSTRAINT PK_DiaryTag PRIMARY KEY (DiaryId, TagId),
     CONSTRAINT FK_DiaryTag_Diary

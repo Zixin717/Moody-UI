@@ -1,6 +1,6 @@
 /* ===== 功能元件 ===== */
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { Link, NavLink, useNavigate } from 'react-router-dom';
+import { Link, NavLink, useNavigate, useParams } from 'react-router-dom';
 
 /* ===== 設計組件 ===== */
 import InteractiveGalaxy from './InteractiveGalaxy'; // 銀河系
@@ -16,6 +16,30 @@ const DiaryPage = () => {
   /* ===== 跳頁實現 ===== */
   const navigate = useNavigate();
 
+  const { date } = useParams(); // 從網址抓 -> 格式範例: 2026-05-09
+  const [diary, setDiary] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    // 從 localStorage 拿 userId
+    const userData = JSON.parse(localStorage.getItem('userData') || '{}');
+    const userId = userData.id;
+
+    // 打 API 問這天有沒有日記
+    fetch(`https://localhost:7247/api/diary/by-date?userId=${userId}&date=${date}`)
+      .then(res => {
+        if (res.status === 404) return null; // 這天沒有日記
+        return res.json();
+      })
+      .then(data => {
+        setDiary(data);
+        setLoading(false);
+      })
+      .catch(() => setLoading(false));
+  }, [date]); // date 變了就重新打 API
+
+  if (loading) return <div>載入中...</div>;
+
 return (
   <MainLayout>
     
@@ -23,8 +47,20 @@ return (
     {/* 從這裡開始寫自己的內容，記得要放在 <MainLayout> 裡面喔！ */}
      <main className="flex-1 flex justify-center items-center py-4 overflow-y-auto">
          <div className="text-2xl font-bold font-serif text-moBrown/50 border-2 border-dashed border-moBrown/30 rounded-[2rem] p-20">
-           弈婷的 Diary Page 準備中...
+           <h1>{date}</h1>
+          {diary ? (
+            <div>
+              <h2>{diary.title ?? '心情日記'}</h2>
+              <p>{diary.body ?? diary.previewText}</p>
+            </div>
+                  ) : 
+          ( <div>這天還沒有日記</div>
+          )}
          </div>
+
+         <div>
+      
+    </div>
      </main>
 
 

@@ -11,120 +11,122 @@ import Icon from './Icon'; // 全域 Icon
 
 
 const HomePage = () => {
-    /* ===== 跳頁實現 ===== */
-    const navigate = useNavigate();
+  /* ===== 跳頁實現 ===== */
+  const navigate = useNavigate();
     
-
-    /* ===== 主題切換實現 ===== */
-    // 主題切換功能 (CSS 變數做法)
-  // const toggleTheme = () => {
-  //   const root = document.documentElement;
-  //   if (root.classList.contains('dark')) {
-  //     root.classList.remove('dark');
-  //     localStorage.setItem('theme', 'light');
-  //   } else {
-  //     root.classList.add('dark');
-  //     localStorage.setItem('theme', 'dark');
-  //   }
-  // };
-
-  
   /* ===== 心情表達邏輯 ===== */
-  // 算本週 (日~六) 的日期陣列
-  const today = new Date();
-  const currentDayOfWeek = today.getDay(); // 取得今天是禮拜幾 (0是週日，6是週六)
-  
-  // 算本週「禮拜日」是哪一天
-  const startOfWeek = new Date(today);
-  startOfWeek.setDate(today.getDate() - currentDayOfWeek);
+  const [todayMoods, setTodayMoods] = useState([]);
 
-  // 產生 7 天的完整資料
-  const weekDays = Array(7).fill(null).map((_, index) => {
-    const date = new Date(startOfWeek);
-    date.setDate(startOfWeek.getDate() + index);
+  useEffect(() => {
+    const userData = JSON.parse(localStorage.getItem('userData') || '{}');
+    const userId = userData.id;
+    if (!userId) return;
+
+    fetch(`https://localhost:7247/api/diary/today-moods?userId=${userId}`)
+      .then(res => res.json())
+      .then(data => setTodayMoods(data.moods))
+      .catch(err => console.error('心情載入失敗', err));
+  }, []);
     
-    // 格式化日期，例如 "2026/04/26"
-    const dateString = `${date.getFullYear()}/${String(date.getMonth() + 1).padStart(2, '0')}/${String(date.getDate()).padStart(2, '0')}`;
-    
-    // TODO: 未來這裡要改成去檢查資料庫
-    // 1. 看這天有沒有寫日記？
-    // 2. 是什麼心情？
-    // 目前因為是全新帳號，一律預設為 'empty'
-    const mood = 'empty'; 
-    
-    return { date: dateString, mood: mood, dayOfWeek: index };
+
+  // ==========================================
+  // 時鐘數學邏輯
+  // ==========================================
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [currentTrack, setCurrentTrack] = useState(0);
+  const audioRef = useRef(null);
+
+  // 0. 音樂素材
+  // 這裡放未來準備好的音樂檔案路徑 (例如放在 public 資料夾下)
+  // 目前先用假名稱示意，之後換成真實的 .mp3 路徑。
+  const playlist = [
+    { title: "Rainy Day Lo-Fi", src: "/music/track1.mp3" },
+    { title: "Forest Morning", src: "/music/track2.mp3" },
+    { title: "Midnight Piano", src: "/music/track3.mp3" }
+  ];
+
+  // 1. 播放/暫停切換
+  const togglePlay = () => {
+    if (isPlaying) {
+      audioRef.current.pause();
+    } else {
+      audioRef.current.play();
+    }
+    setIsPlaying(!isPlaying);
+  };
+
+  // 2. 切換下一首
+  const nextTrack = () => {
+    setCurrentTrack((prev) => (prev + 1) % playlist.length);
+    setIsPlaying(true); // 切歌自動播放
+  };
+
+  // 3. 切換上一首
+  const prevTrack = () => {
+    setCurrentTrack((prev) => (prev - 1 + playlist.length) % playlist.length);
+    setIsPlaying(true);
+  };
+
+  // 4. 當 currentTrack 改變時，自動載入並播放新歌
+  useEffect(() => {
+    if (audioRef.current && isPlaying) {
+      audioRef.current.play();
+    }
+  }, [currentTrack]);
+
+
+
+  // ==========================================
+  // 時鐘數學邏輯
+  // ==========================================
+  // 1. 宣告一個 state -> 存當前時間，初始值為 new Date() (現在的時間)
+  const [currentTime, setCurrentTime] = useState(new Date());
+
+  // 2. 設定計時器 -> 每 1000 毫秒 (1秒) 更新一次時間
+  useEffect(() => {
+    const timer = setInterval(() => setCurrentTime(new Date()), 1000);
+    return () => clearInterval(timer); // 離開網頁時清除計時器
+  }, []);
+
+  // 3. 把時間格式化成指定形式
+  const formattedTime = currentTime.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+  const formattedDate = `${currentTime.getFullYear()} / ${currentTime.getMonth() + 1} / ${currentTime.getDate()}`;
+
+
+  // ==========================================
+  // 時鐘數學邏輯
+  // ==========================================
+  // 1. 取得動態變數
+  const seconds = currentTime.getSeconds();
+  const minutes = currentTime.getMinutes();
+  const hours = currentTime.getHours();
+
+  // 2. 計算旋轉角度 -> 一圈 360 度
+  const secondDeg = seconds * 6; // 60秒一圈，一秒轉 6 度
+  const minuteDeg = minutes * 6 + (seconds * 0.1);     // seconds * 0.1 -> 秒數微調，讓分針平滑移動。
+  const hourDeg = (hours % 12) * 30 + (minutes * 0.5); // minutes * 0.5 -> 分鐘微調，時針會慢慢走到下一個數字。
+
+  // ==========================================
+  // Today 動態更新
+  // ==========================================
+  const [todaySummary, setTodaySummary] = useState({
+    hasDiary: false,
+    tags: [],
+    moodValue: 0,
+    sleepValue: 0,
+    stressValue: 0,
   });
-    
 
-    /* ===== 音樂撥放器邏輯 ===== */
-    const [isPlaying, setIsPlaying] = useState(false);
-    const [currentTrack, setCurrentTrack] = useState(0);
-    const audioRef = useRef(null);
+  useEffect(() => {
+    const userData = JSON.parse(localStorage.getItem('userData') || '{}');
+    const userId = userData.id;
+    if (!userId) return;
 
-    // 0. 音樂素材
-    // 這裡放未來準備好的音樂檔案路徑 (例如放在 public 資料夾下)
-    // 目前先用假名稱示意，之後換成真實的 .mp3 路徑。
-    const playlist = [
-      { title: "Rainy Day Lo-Fi", src: "/music/track1.mp3" },
-      { title: "Forest Morning", src: "/music/track2.mp3" },
-      { title: "Midnight Piano", src: "/music/track3.mp3" }
-    ];
-
-    // 1. 播放/暫停切換
-    const togglePlay = () => {
-      if (isPlaying) {
-        audioRef.current.pause();
-      } else {
-        audioRef.current.play();
-      }
-      setIsPlaying(!isPlaying);
-    };
-
-    // 2. 切換下一首
-    const nextTrack = () => {
-      setCurrentTrack((prev) => (prev + 1) % playlist.length);
-      setIsPlaying(true); // 切歌自動播放
-    };
-
-    // 3. 切換上一首
-    const prevTrack = () => {
-      setCurrentTrack((prev) => (prev - 1 + playlist.length) % playlist.length);
-      setIsPlaying(true);
-    };
-
-    // 4. 當 currentTrack 改變時，自動載入並播放新歌
-    useEffect(() => {
-      if (audioRef.current && isPlaying) {
-        audioRef.current.play();
-      }
-    }, [currentTrack]);
-
-
-    /* ===== 時間邏輯 ===== */
-    // 1. 宣告一個 state -> 存當前時間，初始值為 new Date() (現在的時間)
-    const [currentTime, setCurrentTime] = useState(new Date());
-
-    // 2. 設定計時器 -> 每 1000 毫秒 (1秒) 更新一次時間
-    useEffect(() => {
-      const timer = setInterval(() => setCurrentTime(new Date()), 1000);
-      return () => clearInterval(timer); // 離開網頁時清除計時器
-    }, []);
-
-    // 3. 把時間格式化成指定形式
-    const formattedTime = currentTime.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
-    const formattedDate = `${currentTime.getFullYear()} / ${currentTime.getMonth() + 1} / ${currentTime.getDate()}`;
-
-
-    /* ===== 數學計算區 ===== */
-    // 計算時鐘指針的旋轉角度
-    const seconds = currentTime.getSeconds();
-    const minutes = currentTime.getMinutes();
-    const hours = currentTime.getHours();
-
-    // 計算旋轉角度 -> 一圈 360 度
-    const secondDeg = seconds * 6; // 60秒一圈，一秒轉 6 度
-    const minuteDeg = minutes * 6 + (seconds * 0.1);     // seconds * 0.1 -> 秒數微調，讓分針平滑移動。
-    const hourDeg = (hours % 12) * 30 + (minutes * 0.5); // minutes * 0.5 -> 分鐘微調，時針會慢慢走到下一個數字。
+    fetch(`https://localhost:7247/api/diary/today-summary?userId=${userId}`)
+      .then(res => res.json())
+      .then(data => setTodaySummary(data))
+      .catch(err => console.error('今日摘要載入失敗', err));
+  }, []);
 
   return (
       <MainLayout>
@@ -161,7 +163,7 @@ const HomePage = () => {
 
               {/* 3. 分針 (中等) */}
                 <div
-                  className="absolute bg-[var(--mo-brown)]/50 rounded-full origin-bottom"
+                  className="absolute bg-[var(--mo-brown-20)] rounded-full origin-bottom"
                   style={{ width: '3px', height: '36px', bottom: '50%', transform: `rotate(${minuteDeg}deg)` }}
                 />
 
@@ -231,65 +233,70 @@ const HomePage = () => {
         <div className="flex-1 bg-[var(--mo-cream)] rounded-[2rem] border border-[var(--mo-black)] p-6 shadow-sm flex flex-col">
           <h3 className="text-2xl font-black font-serif text-[var(--mo-black)] mb-1">Today</h3>
           {/* 預設的鼓勵小語 */}
-          <p className="text-xs text-[var(--mo-brown)]/60 mb-6 font-medium">Ready to write your first journal!</p>
+          <p className="text-xs text-[var(--mo-brown)]/60 mb-6 font-medium">
+            {todaySummary.hasDiary ? '今天的星球已點亮！' : 'Ready to write your first journal!'}
+          </p>
           
-          {/* 空白狀態的標籤 */}
-          <div className="flex justify-start gap-2 text-xs font-bold text-[var(--color-text-muted)] mb-4">
-            <span className="bg-white border border-[var(--mo-brown)]/20 py-1 px-3 rounded-full">尚未記錄標籤</span>
+          {/* 標籤區 */}
+          <div className="flex flex-wrap gap-2 mb-4">
+            {todaySummary.tags.length > 0 ? (
+              todaySummary.tags.map(tag => (
+                <span key={tag}
+                  className="bg-white border border-[var(--mo-brown)]/20 py-1 px-3 rounded-full text-xs font-bold">
+                  {tag}
+                </span>
+              ))
+            ) : (
+              <span className="bg-white border border-[var(--mo-brown)]/20 py-1 px-3 rounded-full text-xs font-bold text-[var(--color-text-muted)]">
+                尚未記錄標籤
+              </span>
+            )}
           </div>
 
-          <div className="space-y-4">
-            {/* 把 done 全部設為 0 */}
-            {[{label:"Mood", done:0, total:5},
-              {label:"Sleep", done:0, total:5},
-              {label:"Stress", done:0, total:5}].map(a => (
-              <div key={a.label}>
-                <div className="flex justify-between text-xs font-bold text-[var(--mo-cream)]/80 mb-2">
-                  <span>{a.label}</span>
-                  <span>{a.done}/{a.total}</span>
-                </div>
-                {/* 進度條底色 */}
-                <div className="h-2 bg-[var(--mo-brown)]/10 rounded-full overflow-hidden border border-[var(--mo-brown)]/20">
-                  {/* 進度條進度：因為 done 都是 0，所以一開始會是全空的 */}
-                  <div 
-                    className="h-full bg-[var(--mo-olive)] rounded-full transition-all duration-500"
-                    style={{ width: `${(a.done/a.total)*100}%` }} 
-                  />
-                </div>
+          {/* 進度條區 */}
+          {[
+            { label: "Mood",   done: todaySummary.moodValue,   total: 10 },
+            { label: "Sleep",  done: todaySummary.sleepValue,  total: 10 },
+            { label: "Stress", done: todaySummary.stressValue, total: 10 },
+          ].map(a => (
+            <div key={a.label}>
+              <div className="flex justify-between text-xs font-bold mb-2">
+                <span>{a.label}</span>
+                <span>{a.done}/{a.total}</span>
               </div>
-            ))}
-          </div>
+              <div className="h-2 bg-[var(--mo-brown)]/10 rounded-full overflow-hidden border border-[var(--mo-brown)]/20">
+                <div
+                  className="h-full bg-[var(--mo-olive)] rounded-full transition-all duration-500"
+                  style={{ width: `${(a.done / a.total) * 100}%` }}
+                />
+              </div>
+            </div>
+          ))}
         </div>
 
-        {/* 4-2： 週心情 */}
+        {/* 4-2：當天心情 */}
         <div className="h-32 bg-[var(--mo-cream)] rounded-[2rem] border border-[var(--mo-brown)] p-5 shadow-sm flex flex-col justify-center">
           <p className="text-sm font-bold text-[var(--mo-brown)] mb-3 px-2">Mood</p>
-          
-          <div className="flex justify-between items-center px-2">
-            {/* 用算好的 weekDays 陣列來跑迴圈 */}
-            {weekDays.map((day, index) => (
-              <span 
-                key={index} 
-                title={day.date} // 滑鼠移過去會顯示日期
-                // 點擊後，帶著日期跳轉到寫日記的頁面
-                onClick={() => navigate(`/diary/new?date=${day.date}`)}
-                className="cursor-pointer transition-transform hover:scale-125 duration-300"
-              >
-                {day.mood === 'empty' ? (
-                  // 空白狀態的圈圈
-                  <div className="text-gray-300 hover:text-[var(--mo-olive)] transition-colors">
-                    <Icon name="circleOutline" size={20} color="currentColor" />
-                  </div>
-                ) : (
-                  // 有心情狀態的圖片
-                  <img 
-                    src={`/emoji_${day.mood}.svg`} 
-                    alt={`Mood: ${day.mood}`} 
-                    className="w-8 h-8 opacity-80 hover:opacity-100 transition-opacity" 
-                  />
-                )}
-              </span>
-            ))}
+
+          <div className="flex gap-3 items-center px-2 flex-wrap">
+            {todayMoods.length > 0 ? (
+              // 有心情資料 → 顯示 emoji
+              todayMoods.map(mood => (
+                <span key={mood.moodId} title={mood.moodName}
+                  className="text-xl cursor-default transition-transform hover:scale-125 duration-300">
+                  {mood.emoji}
+                </span>
+              ))
+            ) : (
+              // 沒有 → 顯示 6 個空圈（上限 6 種）
+              Array(6).fill(null).map((_, i) => (
+                <span key={i}
+                  onClick={() => navigate('/diary/new')}
+                  className="cursor-pointer transition-transform hover:scale-125 duration-300 text-gray-300 hover:text-[var(--mo-olive)]">
+                  <Icon name="circleOutline" size={20} color="currentColor" />
+                </span>
+              ))
+            )}
           </div>
         </div>
 
