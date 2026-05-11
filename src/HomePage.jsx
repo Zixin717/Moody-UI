@@ -5,7 +5,7 @@ import { Link, NavLink, useNavigate } from 'react-router-dom';  // 分頁元件 
 /* ===== 獨立組件 ===== */
 import InteractiveGalaxy from './InteractiveGalaxy';
 import { mockEntries } from './mockEntries';
-import MainLayout from './MainLayout'; // 佈局
+// import MainLayout from './MainLayout'; // 佈局
 import Icon from './Icon'; // 全域 Icon
 
 
@@ -191,7 +191,8 @@ const handleFileChange = async (e) => {
 };
 
   return (
-      <MainLayout>
+    <div className="flex flex-row w-full h-full min-h-[800px] gap-6 p-4 bg-transparent">
+      {/*<MainLayout>*/}
 
         {/* ── Block 2 Habit（Left） ── */}
         <aside className="w-64 flex flex-col gap-4">
@@ -429,8 +430,8 @@ const handleFileChange = async (e) => {
 
         </aside>
 
-        </MainLayout>
-
+    {/*</MainLayout>*/}
+    </div>
     
     
   );

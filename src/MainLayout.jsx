@@ -193,13 +193,7 @@ const MainLayout = ({ children }) => {
                 <header className="relative z-45 bg-[var(--color-topbar)] border-b border-moBlack text-white flex items-center justify-between px-8 py-4 mb-3 flex-shrink-0">
                     <Link to="/home" className="text-[30px] text-moBlack font-bold font-serif cursor-pointer hover:text-moCitron transition-colors">Moody</Link>
                     
-                    {/* 1-1 搜尋列 */}
-                    <div className="relative">
-                        <div className="flex items-center bg-white border border-moBlack focus-within:border-moAzure transition-all rounded-full px-5 py-2 w-[700px] h-[50px] shadow-sm">
-                            <Icon name="search" size={18} color="#9ca3af" />
-                            <input type="text" placeholder="Search my journal" className="ml-3 outline-none w-full text-sm bg-transparent placeholder-gray-400 text-gray-700" onClick={() => setOpenMenu('search')} />
-                        </div>
-                    </div>
+                   
 
                     {/* 1-2 通知＆帳號 */}
                     <div className="flex gap-4">
