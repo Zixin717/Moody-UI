@@ -127,6 +127,7 @@ const HomePage = () => {
   // ==========================================
   const [todaySummary, setTodaySummary] = useState({
     hasDiary: false,
+    diaryId: null,
     tags: [],
     moodValue: 0,
     sleepValue: 0,
@@ -161,6 +162,14 @@ const handleFileChange = async (e) => {
   const file = e.target.files[0];
   if (!file) return;
 
+  // 上傳前檢查：今天有沒有日記？如果沒有，就請使用者先建立日記。
+  if (!todaySummary.hasDiary || !todaySummary.diaryId) {
+    alert("請先點擊中央星系建立今天的日記，才能上傳照片喔！");
+    // 把 input 清空，不然下次選同一張照片會沒有反應。
+    e.target.value = null; 
+    return;
+  }
+
   // UX ：利用瀏覽器 FileReader 先在畫面上預覽圖片
   const reader = new FileReader();
   reader.onload = (e) => setPreviewImage(e.target.result);
@@ -169,8 +178,7 @@ const handleFileChange = async (e) => {
   const formData = new FormData();
   formData.append("file", file);
   // 注意：資料庫規定必須要有 DiaryId。
-  // 測試階段先寫死 1 (代表把圖片綁在 ID為1 的日記上)，之後再改成動態的 diaryId。
-  formData.append("diaryId", 1); 
+  formData.append("diaryId", todaySummary.diaryId);
 
   try {
     const response = await fetch(`/api/media/upload`, {

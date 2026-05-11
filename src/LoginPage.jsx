@@ -30,16 +30,17 @@ const LoginPage = () => {
         const data = await response.json();
         alert("登入成功！歡迎回來，" + data.user.nickname);
         
-        // 1. 存進 localStorage (這部分妳寫得很對，保留！)
+        // 1. 存進 localStorage
         localStorage.setItem('userData', JSON.stringify(data.user)); 
         localStorage.setItem('currentUserId', data.user.id);         
         localStorage.setItem('currentUserName', data.user.nickname); 
 
         // 2. 跳轉邏輯 
         // 判斷是否為開發模式 (Local Development)
+        // 判斷是否為開發模式 (Local Development)
         if (import.meta.env.DEV) {
           // 本地開發模式
-          // MVC 頁面還沒建好，所以強制切換回寫好的 React 首頁！
+          // MVC 頁面還沒建好，所以強制切換回寫好的 React 首頁。
           navigate('/home'); 
         } else {
           // 正式上線模式
