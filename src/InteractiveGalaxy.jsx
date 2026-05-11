@@ -109,7 +109,7 @@ const InteractiveGalaxy = ({ diaries }) => {
         className="w-full h-full flex items-center justify-center overflow-hidden [perspective:1000px] relative"
         onMouseMove={handleMouseMove}
       >
-        <div className="absolute top-6 left-6 text-m text-[var(--mo-cream-80)] opacity-50 flex items-center gap-2">
+        <div className="absolute top-6 left-6 text-m text-[var(--mo-brown-80)] opacity-50 flex items-center gap-2">
           <LocalIcon name="chat" size={14} color="currentColor" />
           滑鼠懸停星星可暫停並查看日記
         </div>
@@ -134,7 +134,9 @@ const InteractiveGalaxy = ({ diaries }) => {
           
           {/* 圓形按鈕：懸停時箭頭會有往右推的小動畫 */}
           <button 
-            onClick={() => navigate('/diary/new')}
+            onClick={() => { const today = new Date();
+                             const dateStr = `${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,'0')}-${String(today.getDate()).padStart(2,'0')}`;
+                             navigate(`/diary/${dateStr}`); }}
             className="w-14 h-14 rounded-full border border-[var(--mo-black)] bg-transparent flex items-center justify-center text-[var(--mo-black)] hover:bg-[var(--mo-olive)] hover:text-white hover:border-[var(--mo-olive)] transition-colors shadow-sm group cursor-pointer"
           >
             <span className="group-hover:translate-x-1 transition-transform">
@@ -257,7 +259,7 @@ const InteractiveGalaxy = ({ diaries }) => {
                               setIsPaused(true);
                           }}
                           onMouseLeave={() => { setHoveredEntry(null); setIsPaused(false); }}
-                          onClick={() => navigate(`/diary/new?date=${currentYear}-${String(currentMonthNum).padStart(2,'0')}-${String(day).padStart(2,'0')}`)}
+                          onClick={() => navigate(`/diary/${currentYear}-${String(currentMonthNum).padStart(2,'0')}-${String(day).padStart(2,'0')}`)}
                           title={`新增 ${currentMonthNum}/${day} 的日記`}
                       />
                     )}

@@ -291,7 +291,10 @@ const HomePage = () => {
               // 沒有 → 顯示 6 個空圈（上限 6 種）
               Array(6).fill(null).map((_, i) => (
                 <span key={i}
-                  onClick={() => navigate('/diary/new')}
+                  onClick={() => {
+                    const today = new Date();
+                    const dateStr = `${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,'0')}-${String(today.getDate()).padStart(2,'0')}`;
+                          navigate(`/diary/${dateStr}`); }} // 點擊空圈也可以進日記頁新增心情
                   className="cursor-pointer transition-transform hover:scale-125 duration-300 text-gray-300 hover:text-[var(--mo-olive)]">
                   <Icon name="circleOutline" size={20} color="currentColor" />
                 </span>

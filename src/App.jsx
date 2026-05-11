@@ -50,7 +50,6 @@ function App() {
       {/* 炯宇的心血 -> HabitPage (習慣頁) */}
       <Route path="/habit" element={<HabitPage />} />
       {/* 弈婷的心血 -> DiaryPage (日記頁) */}
-      <Route path="/diary" element={<DiaryPage />} />
       <Route path="/diary/:date" element={<DiaryPage />} />
 
 

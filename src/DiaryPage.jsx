@@ -43,24 +43,15 @@ const DiaryPage = () => {
 return (
   <MainLayout>
     
-    
-    {/* 從這裡開始寫自己的內容，記得要放在 <MainLayout> 裡面喔！ */}
      <main className="flex-1 flex justify-center items-center py-4 overflow-y-auto">
          <div className="text-2xl font-bold font-serif text-moBrown/50 border-2 border-dashed border-moBrown/30 rounded-[2rem] p-20">
-           <h1>{date}</h1>
-          {diary ? (
             <div>
-              <h2>{diary.title ?? '心情日記'}</h2>
-              <p>{diary.body ?? diary.previewText}</p>
+              <p>{date}</p>          {/* 顯示日期 */}
+              <p>這天還沒有日記</p>
             </div>
-                  ) : 
-          ( <div>這天還沒有日記</div>
-          )}
          </div>
 
-         <div>
-      
-    </div>
+       
      </main>
 
 
