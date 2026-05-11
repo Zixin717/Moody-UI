@@ -318,9 +318,9 @@ GO
    ========================================================= */
 CREATE TABLE dbo.task
 (
-    task_id INT IDENTITY(1,1) NOT NULL,
-    user_id INT NOT NULL,
-    title NVARCHAR(100) NOT NULL,
+    task_id INT IDENTITY(1,1) NOT NULL, // 抓這個 -> 任務 ID
+    user_id INT NOT NULL,               // 抓這個 -> 用戶 ID
+    title NVARCHAR(100) NOT NULL,       // 抓這個 -> 用戶寫下的習慣
     rhythm_type NVARCHAR(20) NOT NULL,
     status NVARCHAR(20) NOT NULL
         CONSTRAINT DF_task_status DEFAULT (N'Active'),

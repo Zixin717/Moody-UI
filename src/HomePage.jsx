@@ -22,7 +22,7 @@ const HomePage = () => {
     const userId = userData.id;
     if (!userId) return;
 
-    fetch(`https://localhost:7247/api/diary/today-moods?userId=${userId}`)
+    fetch(`/api/diary/today-moods?userId=${userId}`)
       .then(res => res.json())
       .then(data => setTodayMoods(data.moods))
       .catch(err => console.error('心情載入失敗', err));
@@ -77,7 +77,7 @@ const HomePage = () => {
 
 
   // ==========================================
-  // 時鐘數學邏輯
+  // 時鐘數學邏輯 1
   // ==========================================
   // 1. 宣告一個 state -> 存當前時間，初始值為 new Date() (現在的時間)
   const [currentTime, setCurrentTime] = useState(new Date());
@@ -94,7 +94,7 @@ const HomePage = () => {
 
 
   // ==========================================
-  // 時鐘數學邏輯
+  // 時鐘數學邏輯 2
   // ==========================================
   // 1. 取得動態變數
   const seconds = currentTime.getSeconds();
@@ -105,6 +105,22 @@ const HomePage = () => {
   const secondDeg = seconds * 6; // 60秒一圈，一秒轉 6 度
   const minuteDeg = minutes * 6 + (seconds * 0.1);     // seconds * 0.1 -> 秒數微調，讓分針平滑移動。
   const hourDeg = (hours % 12) * 30 + (minutes * 0.5); // minutes * 0.5 -> 分鐘微調，時針會慢慢走到下一個數字。
+
+  // ==========================================
+  // Habit 欄位邏輯
+  // ==========================================
+  const [habits, setHabits] = useState([]);
+
+  useEffect(() => {
+    const userData = JSON.parse(localStorage.getItem('userData') || '{}');
+    const userId = userData.id;
+    if (!userId) return;
+
+    fetch(`/api/task/list?userId=${userId}`)
+      .then(res => res.json())
+      .then(data => setHabits(data.tasks))
+      .catch(err => console.error('習慣載入失敗', err));
+  }, []);
 
   // ==========================================
   // Today 動態更新
@@ -122,11 +138,57 @@ const HomePage = () => {
     const userId = userData.id;
     if (!userId) return;
 
-    fetch(`https://localhost:7247/api/diary/today-summary?userId=${userId}`)
+    fetch(`/api/diary/today-summary?userId=${userId}`)
       .then(res => res.json())
       .then(data => setTodaySummary(data))
       .catch(err => console.error('今日摘要載入失敗', err));
   }, []);
+
+
+
+// ==========================================
+// 相片動態更新
+// ==========================================
+const fileInputRef = useRef(null);
+const [previewImage, setPreviewImage] = useState(null); // 用來裝預覽圖片的網址
+
+// --- 處理點擊與上傳的事件 ---
+const handleDivClick = () => {
+  fileInputRef.current.click(); // 點擊美美的 div 時，觸發隱藏的 input
+};
+
+const handleFileChange = async (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+
+  // UX ：利用瀏覽器 FileReader 先在畫面上預覽圖片
+  const reader = new FileReader();
+  reader.onload = (e) => setPreviewImage(e.target.result);
+  reader.readAsDataURL(file);
+
+  const formData = new FormData();
+  formData.append("file", file);
+  // 注意：資料庫規定必須要有 DiaryId。
+  // 測試階段先寫死 1 (代表把圖片綁在 ID為1 的日記上)，之後再改成動態的 diaryId。
+  formData.append("diaryId", 1); 
+
+  try {
+    const response = await fetch(`/api/media/upload`, {
+      method: 'POST',
+      // 不寫 'Content-Type': 'application/json' -> 瀏覽器看到 FormData 會自動處理格式
+      body: formData 
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      console.log("資料庫儲存的圖片路徑:", data.fileUrl);
+    } else {
+      alert("上傳失敗");
+    }
+  } catch (error) {
+    console.error("連線異常:", error);
+  }
+};
 
   return (
       <MainLayout>
@@ -181,25 +243,25 @@ const HomePage = () => {
             <div className="flex-1 bg-[var(--mo-cream)] rounded-[2rem] p-6 flex flex-col shadow-sm border border-[var(--mo-black)] relative">
               <h3 className="text-3xl font-bold font-serif text-[var(--mo-black)] mb-1">Habit</h3>
 
-              {/* 習慣清單 */}
-              <ul className="space-y-4 flex-1">
-                <li className="text-sm font-medium text-gray-400 text-center mt-4">尚未新增任何習慣</li>
-                {/* <li className="flex items-center gap-3 text-sm font-medium text-[var(--mo-brown)]">
-                  <Icon name="check" size={18} color="var(--mo-olive)" /> Drink Water
-                </li>
-                <li className="flex items-center gap-3 text-sm font-medium text-[var(--mo-brown)]">
-                  <Icon name="check" size={18} color="var(--mo-olive)" /> Exercise
-                </li> */}
-                {/* 這行加了底線分隔 */}
-                {/* <li className="flex items-center gap-3 text-sm font-medium text-[var(--mo-brown)] border-b border-[#E8E9DF] pb-4 mb-2">
-                  <Icon name="check" size={18} color="var(--mo-olive)" /> Sleep 8 hr
-                </li>
-                <li className="flex items-center gap-3 text-sm font-medium text-[var(--mo-brown)]">
-                  <Icon name="square" size={18} color="var(--mo-olive)" /> Dinner
-                </li>
-                <li className="flex items-center gap-3 text-sm font-medium text-[var(--mo-brown)]">
-                  <Icon name="square" size={18} color="var(--mo-olive)" /> Presentation
-                </li> */}
+              {/* Habit 清單 */}
+              <ul className="space-y-3 flex-1">
+                {habits.length > 0 ? (
+                  habits.map(habit => (
+                    <li key={habit.taskId}
+                      className="flex items-center gap-3 text-sm font-medium text-[var(--mo-brown)]">
+                      <Icon name="square" size={18} color="var(--mo-olive)" />
+                      {habit.title}
+                      {/* 顯示頻率標籤 */}
+                      <span className="ml-auto text-[10px] text-[var(--mo-brown)]/40 font-normal">
+                        {habit.rhythmType === 'Daily' ? '每日' : '非每日'}
+                      </span>
+                    </li>
+                  ))
+                ) : (
+                  <li className="text-sm font-medium text-gray-400 text-center mt-4">
+                    尚未新增任何習慣
+                  </li>
+                )}
               </ul>
 
               {/* 習慣按鈕 */}
@@ -341,9 +403,28 @@ const HomePage = () => {
         </div>
 
         {/* 4-4 相簿 */}
-        <div onClick={()=>navigate('habit')} className="h-32 bg-[var(--mo-cream-20)] rounded-[2rem] border-2 border-dashed border-[var(--mo-brown)]/80 p-5 flex flex-col items-center justify-center hover:bg-[var(--mo-cream)]/80 transition cursor-pointer">
-          <p className="text-sm font-bold text-[var(--mo-brown)]/50 mb-1">Photo</p>
-          <span className="text-xs text-[var(--mo-brown)]/40">Click to upload</span>
+        <div 
+          onClick={handleDivClick} 
+          className="h-32 bg-[var(--mo-cream-20)] rounded-[2rem] border-2 border-dashed border-[var(--mo-brown)]/80 flex flex-col items-center justify-center hover:bg-[var(--mo-cream)]/80 transition cursor-pointer overflow-hidden relative"
+        >
+          {/* 隱藏的 input */}
+          <input 
+            type="file" 
+            accept="image/*" 
+            className="hidden" 
+            ref={fileInputRef} 
+            onChange={handleFileChange} 
+          />
+
+          {/* 如果有圖片就顯示圖片，沒有就顯示原本的文字 */}
+          {previewImage ? (
+            <img src={previewImage} alt="Uploaded" className="w-full h-full object-cover" />
+          ) : (
+            <>
+              <p className="text-sm font-bold text-[var(--mo-brown)]/50 mb-1">Photo</p>
+              <span className="text-xs text-[var(--mo-brown)]/40">Click to upload</span>
+            </>
+          )}
         </div>
 
         </aside>

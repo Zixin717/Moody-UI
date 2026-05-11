@@ -369,3 +369,16 @@ GO
 
 PRINT N'DiaryTaskDB schema created successfully.';
 GO
+
+USE [DiaryTaskDB];
+GO
+-- 假資料測試指令：習慣
+INSERT INTO dbo.task (user_id, title, rhythm_type, status, created_at, updated_at)
+VALUES (2, '喝水 8 杯', 'Daily', 'Active', SYSDATETIME(), SYSDATETIME());
+
+INSERT INTO dbo.task (user_id, title, rhythm_type, status, created_at, updated_at)
+VALUES (2, '睡前閱讀', 'NonDaily', 'Active', SYSDATETIME(), SYSDATETIME());
+
+-- 假資料測試指令：日記 -> 幫照片建立第一篇日記
+INSERT INTO dbo.Diary (UserId, TemplateType, DiaryDate, DiaryTime, Visibility, Status, CreatedAt, UpdatedAt)
+VALUES (2, 'normal', '2026-05-11', '15:00:00', 'private', 'draft', SYSDATETIME(), SYSDATETIME());

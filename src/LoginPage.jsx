@@ -16,12 +16,11 @@ const LoginPage = () => {
   };
 
   // 2. 登入邏輯
-  const handleLogin = async (e) => {
-    e.preventDefault(); // 防止表單重整
+ const handleLogin = async (e) => {
+    e.preventDefault(); 
 
     try {
-      // 記得換成後端的 port -> 目前 7247
-      const response = await fetch('https://localhost:7247/api/user/login', {
+      const response = await fetch('/api/user/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),
@@ -31,13 +30,23 @@ const LoginPage = () => {
         const data = await response.json();
         alert("登入成功！歡迎回來，" + data.user.nickname);
         
-        // 注意：把用戶資料存進瀏覽器的 localStorage  
-        // 這樣別的頁面 (Home, Profile) 就能拿到這個人的資料了
-        localStorage.setItem('userData', JSON.stringify(data.user)); // 給個人資料頁用
-        localStorage.setItem('currentUserId', data.user.id);         // 給驗證密碼頁用
-        localStorage.setItem('currentUserName', data.user.nickname); // 順便存名字
+        // 1. 存進 localStorage (這部分妳寫得很對，保留！)
+        localStorage.setItem('userData', JSON.stringify(data.user)); 
+        localStorage.setItem('currentUserId', data.user.id);         
+        localStorage.setItem('currentUserName', data.user.nickname); 
 
-        navigate('/home');
+        // 2. 跳轉邏輯 
+        // 判斷是否為開發模式 (Local Development)
+        if (import.meta.env.DEV) {
+          // 本地開發模式
+          // MVC 頁面還沒建好，所以強制切換回寫好的 React 首頁！
+          navigate('/home'); 
+        } else {
+          // 正式上線模式
+          // 未來打包合併後再用這個連接 MVC
+          window.location.href = '/FrontPage/Index';
+        }
+
       } else {
         alert("信箱或密碼錯誤！請再試一次。");
       }

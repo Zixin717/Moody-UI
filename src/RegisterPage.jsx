@@ -30,7 +30,7 @@ const RegisterPage = () => {
     try {
       // 向 C# API 發送 POST 請求
       // ※ 注意：要換成我自己後端終端機顯示的 Port 號 -> 目前維持 7247
-      const response = await fetch('https://localhost:7247/api/user/register', {
+      const response = await fetch('/api/user/register', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
