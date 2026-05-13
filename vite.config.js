@@ -1,18 +1,36 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
+import { resolve } from 'path'
 
-// https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react()],
-  
-  // 加入 server 區塊設定 Proxy 代理
+
   server: {
     proxy: {
-      // 只要 fetch 的網址開頭是 /api，就會自動轉交給 https://localhost:7247 這個後端伺服器。
       '/api': {
-        target: 'https://localhost:7247', // 自動轉交給 C# 後端
+        target: 'https://localhost:7247',
         changeOrigin: true,
-        secure: false, // 因為我們在本地端用的是沒有正式憑證的 https，所以設為 false 避免擋信
+        secure: false,
+      }
+    }
+  },
+
+  build: {
+    // 直接 build 進 wwwroot，省去手動複製
+    outDir: '../DiaryProject/DiaryProject/wwwroot/react-home',
+    emptyOutDir: true,
+
+    rollupOptions: {
+      input: resolve(__dirname, 'index.html'),  // 單入口（您只負責 HomePage）
+
+      output: {
+        // 固定檔名：永遠輸出 index.js / index.css
+        entryFileNames: 'assets/index.js',
+        chunkFileNames: 'assets/[name].js',
+        assetFileNames: (info) => {
+          if (info.name?.endsWith('.css')) return 'assets/index.css'
+          return 'assets/[name][extname]'
+        }
       }
     }
   }

@@ -13,13 +13,13 @@ SET ARITHABORT ON;
 SET NUMERIC_ROUNDABORT OFF;
 GO
 
-IF DB_ID(N'DiaryTaskDB') IS NULL
+IF DB_ID(N'MoodDiary') IS NULL
 BEGIN
-    CREATE DATABASE [DiaryTaskDB];
+    CREATE DATABASE [MoodDiary];
 END;
 GO
 
-USE [DiaryTaskDB];
+USE [MoodDiary];
 GO
 
 /* Drop child tables first so this script can be rerun cleanly. */
@@ -367,10 +367,10 @@ CREATE INDEX IX_task_checkin_log_checkin_date
 ON dbo.task_checkin_log(checkin_date);
 GO
 
-PRINT N'DiaryTaskDB schema created successfully.';
+PRINT N'MoodDiary schema created successfully.';
 GO
 
-USE [DiaryTaskDB];
+USE [MoodDiary];
 GO
 -- 假資料測試指令：習慣
 INSERT INTO dbo.task (user_id, title, rhythm_type, status, created_at, updated_at)

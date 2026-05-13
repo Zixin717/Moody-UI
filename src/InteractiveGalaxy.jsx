@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import ReactDOM from 'react-dom';       // ← 新增：Portal 需要用到
-import { useNavigate } from 'react-router-dom';
+
 
 // ─── Icon 元件 ───────────────────────────
 const LocalIcon = ({ name, size = 20, color = "currentColor" }) => {
   const icons = {
-    heart:       <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" fill="none" stroke={color} strokeWidth="1.5"/>,
+    heart:       <path d="M20 .84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" fill="none" stroke={color} strokeWidth="1.5"/>,
     chat:        <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" fill="none" stroke={color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>,
     arrowUpRight:<><line x1="7" y1="17" x2="17" y2="7" stroke={color} strokeWidth="1.5" strokeLinecap="round"/><polyline points="7 7 17 7 17 17" fill="none" stroke={color} strokeWidth="1.5" strokeLinecap="round"/></>,
     arrowRight:  <><line x1="5" y1="12" x2="19" y2="12" stroke={color} strokeWidth="1.5" strokeLinecap="round"/><polyline points="12 5 19 12 12 19" fill="none" stroke={color} strokeWidth="1.5" strokeLinecap="round"/></>,
@@ -60,38 +60,26 @@ const DiaryCard = ({ entry, pos, onClick }) => {
 };
 
 // ─── 主元件 ──────────────────────────────────────────────────
+// ─── 主元件 ─────────────────────────────────
 const InteractiveGalaxy = ({ diaries }) => {
-  const navigate = useNavigate();
-
-  // hoveredEntry：目前 hover 的日記資料
   const [hoveredEntry, setHoveredEntry] = useState(null);
-  // cardPos：滑鼠在螢幕上的座標（給 Portal 卡片定位用）
   const [cardPos, setCardPos] = useState({ x: 0, y: 0 });
   const [isPaused, setIsPaused] = useState(false);
 
-// const getOrbitSize = (orbitIndex) => 240 + (orbitIndex - 1) * 100;
-
-  // 滑鼠移動時更新座標
-  // e.clientX / e.clientY 是相對於視窗的座標，和 fixed 定位搭配使用
   const handleMouseMove = (e) => {
     setCardPos({ x: e.clientX, y: e.clientY });
   };
 
-   // 1. 動態日曆邏輯：取得目前的年、月，以及這個月有幾天
   const todayDate = new Date();
   const currentYear = todayDate.getFullYear();
-  const currentMonthNum = todayDate.getMonth() + 1; // 1-12
-  const daysInMonth = new Date(currentYear, currentMonthNum, 0).getDate(); // 取得當月總天數 (例如 31)
-  
-  // 取得月份的英文縮寫 (例如 "May", "Apr")，用來顯示在主星上
+  const currentMonthNum = todayDate.getMonth() + 1;
+  const daysInMonth = new Date(currentYear, currentMonthNum, 0).getDate();
   const monthName = todayDate.toLocaleString('en-US', { month: 'short' });
-
-  // 產生一個陣列，長度為當月天數，例如 [1, 2, ..., 31]
   const monthDaysArray = Array.from({ length: daysInMonth }, (_, i) => i + 1);
 
-  // 判斷今天是否有寫日記
   const todayString = `${currentYear} / ${String(currentMonthNum).padStart(2, '0')} / ${String(todayDate.getDate()).padStart(2, '0')}`;
   const hasTodayDiary = diaries.some(entry => entry.date === todayString);
+
 
 
   return (
@@ -134,9 +122,11 @@ const InteractiveGalaxy = ({ diaries }) => {
           
           {/* 圓形按鈕：懸停時箭頭會有往右推的小動畫 */}
           <button 
-            onClick={() => { const today = new Date();
-                             const dateStr = `${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,'0')}-${String(today.getDate()).padStart(2,'0')}`;
-                             navigate(`/diary/${dateStr}`); }}
+            onClick={() => { 
+              const today = new Date();
+              const dateStr = `${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,'0')}-${String(today.getDate()).padStart(2,'0')}`;
+              window.location.href = `/Diary/DiaryList?date=${dateStr}`;
+            }}
             className="w-14 h-14 rounded-full border border-[var(--mo-black)] bg-transparent flex items-center justify-center text-[var(--mo-black)] hover:bg-[var(--mo-olive)] hover:text-white hover:border-[var(--mo-olive)] transition-colors shadow-sm group cursor-pointer"
           >
             <span className="group-hover:translate-x-1 transition-transform">
@@ -208,6 +198,7 @@ const InteractiveGalaxy = ({ diaries }) => {
             // 4. 統一公轉方向 -> 所有行星同向環繞，符合自然法則
             const orbitDirection = 'normal';
             const planetDirection = 'reverse'; // 星星本體永遠要反向自轉，才能保持面向鏡頭。
+            const diaryUrl = `/Diary/DiaryList?date=${currentYear}-${String(currentMonthNum).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
 
             
 
@@ -240,9 +231,9 @@ const InteractiveGalaxy = ({ diaries }) => {
                       <button
                         style={{ background: entry.color }}
                         className="absolute -translate-x-1/2 -translate-y-1/2 w-6 h-6 rounded-full border-2 border-[var(--mo-brown)] shadow-[0_0_15px_rgba(255,255,255,0.8)] transition-transform duration-300 hover:scale-150 cursor-pointer"
-                        onMouseEnter={() => { setHoveredEntry(entry); }}
-                        onMouseLeave={() => { setHoveredEntry(null); }}
-                        onClick={() => navigate(`/diary/${currentYear}-${String(currentMonthNum).padStart(2,'0')}-${String(day).padStart(2,'0')}`)}
+                        onMouseEnter={() => { setHoveredEntry(entry),setIsPaused(true); }}
+                        onMouseLeave={() => { setHoveredEntry(null); setIsPaused(false); }}
+                        onClick={() => { window.location.href = diaryUrl; }}
                       />
                     ) : (
                       <button
@@ -259,7 +250,7 @@ const InteractiveGalaxy = ({ diaries }) => {
                               setIsPaused(true);
                           }}
                           onMouseLeave={() => { setHoveredEntry(null); setIsPaused(false); }}
-                          onClick={() => navigate(`/diary/${currentYear}-${String(currentMonthNum).padStart(2,'0')}-${String(day).padStart(2,'0')}`)}
+                          onClick={() => { window.location.href = diaryUrl; }}
                           title={`新增 ${currentMonthNum}/${day} 的日記`}
                       />
                     )}
@@ -274,12 +265,22 @@ const InteractiveGalaxy = ({ diaries }) => {
         <DiaryCard
           entry={hoveredEntry}
           pos={cardPos}
-          onClick={() => navigate('/diary/blank')}
+          onClick={() => {
+            // 修補④：改用 navigate 進 React 路由 /diary/:date，符合 App.jsx 的設定
+            if (hoveredEntry?.date) {
+              const parts = hoveredEntry.date.replaceAll(' ', '').split('/');
+              if (parts.length === 3) {
+                const [y, m, d] = parts;
+                window.location.href = `/Diary/DiaryList?date=${y}-${m}-${d}`;
+                return;
+              }
+            }
+            window.location.href = '/Diary/DiaryList';  // 萬一沒日期資訊就回首頁
+          }}
         />
       </div>
     </div>
   );
-  
 };
 
 export default InteractiveGalaxy;

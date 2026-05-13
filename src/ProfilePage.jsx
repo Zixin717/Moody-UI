@@ -1,6 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { Link, NavLink, useNavigate } from 'react-router-dom';
-import MainLayout from './MainLayout'; // 全域 佈局
 import Icon from './Icon';             // 全域 Icon
 
 
@@ -9,7 +7,6 @@ const ProfilePage = () => {
   const [openMenu, setOpenMenu] = useState(null);
   const [openSections, setOpenSections] = useState({ account: true, setting: false, delete: false });
   const [isDeleteConfirmed, setIsDeleteConfirmed] = useState(false);
-  const navigate = useNavigate();
   
   
   const toggleSection = (section) => {
@@ -28,29 +25,69 @@ const ProfilePage = () => {
   };
 
   // 3. 原始資料 -> 用來備份，當按下 Reset 時可以復原。
-  const [originalData, setOriginalData] = useState({ nickname: '', email: '', phone: '', birthday: '' });
+  const [originalData, setOriginalData] = useState({ 
+    nickname: '', 
+    email: '', 
+    phone: '', 
+    birthday: '',
+    isNotificationEnabled: true,
+    theme: 'Beige' 
+  });
   
   // 4. 編輯資料 -> 綁定在輸入框上的狀態，會隨著使用者打字改變
-  const [editData, setEditData] = useState({ nickname: '', email: '', phone: '', birthday: '' });
+  const [editData, setEditData] = useState({ 
+    nickname: '', 
+    email: '', 
+    phone: '', 
+    birthday: '',
+    isNotificationEnabled: true,
+    theme: 'Beige' 
+  });
 
   // 5. 畫面剛載入時，從 localStorage 抓取用戶資料
   useEffect(() => {
-    const storedUser = JSON.parse(localStorage.getItem('userData') || '{}');
-    if (storedUser && storedUser.id) {
-      setUserId(storedUser.id);
-      
-      // 準備好要顯示的資料
-      const loadedData = {
-        nickname: storedUser.nickname || '',
-        email: storedUser.email || '',
-        phone: storedUser.phone || '',
-        birthday: storedUser.birthday || '',
-        isNotificationEnabled: storedUser.isNotificationEnabled ?? true 
-      };
+    const loadCurrentUser = async () => {
+      try {
+        const response = await fetch('/api/user/me', {
+          method: 'GET',
+          credentials: 'include'
+        });
 
-      setOriginalData(loadedData);
-      setEditData(loadedData);
-    }
+        if (!response.ok) {
+          if (response.status === 401) {
+            window.location.href = '/';
+            return;
+          }
+          throw new Error(`HTTP ${response.status}`);
+        }
+
+        const user = await response.json();
+
+        setUserId(user.id);
+
+        const loadedData = {
+          nickname: user.nickname || '',
+          email: user.email || '',
+          phone: user.phone || '',
+          birthday: user.birthday
+            ? String(user.birthday).slice(0, 10)
+            : '',
+          isNotificationEnabled: user.isNotificationEnabled ?? true,
+          theme: user.theme || 'Beige'
+        };
+
+        setOriginalData(loadedData);
+        setEditData(loadedData);
+
+        localStorage.setItem('userData', JSON.stringify(user));
+        localStorage.setItem('currentUserId', user.id);
+        localStorage.setItem('currentUserName', user.nickname || '');
+      } catch (error) {
+        console.error('載入目前使用者失敗:', error);
+      }
+    };
+
+    loadCurrentUser();
   }, []);
 
   // 6. 輸入框文字改變
@@ -66,7 +103,7 @@ const ProfilePage = () => {
   // 8. Save 按鈕：打 API 更新資料庫
   const handleSave = async () => {
     try {
-      const response = await fetch(`https://localhost:7247/api/user/update/${userId}`, {
+      const response = await fetch(`/api/user/update/${userId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -79,18 +116,38 @@ const ProfilePage = () => {
 
       if (response.ok) {
         const data = await response.json();
-        alert("儲存成功！");
-        
-        // 更新成功後，把最新的資料存進 localStorage，並更新備份
-        localStorage.setItem('userData', JSON.stringify(data.user));
-        setOriginalData(data.user);
-        setEditData(data.user);
+        alert('儲存成功！');
+
+        const mergedUser = {
+          ...JSON.parse(localStorage.getItem('userData') || '{}'),
+          ...data.user,
+          isNotificationEnabled: editData.isNotificationEnabled,
+          theme: editData.theme
+        };
+
+        localStorage.setItem('userData', JSON.stringify(mergedUser));
+        localStorage.setItem('currentUserId', mergedUser.id);
+        localStorage.setItem('currentUserName', mergedUser.nickname || '');
+
+        const loadedData = {
+          nickname: mergedUser.nickname || '',
+          email: mergedUser.email || '',
+          phone: mergedUser.phone || '',
+          birthday: mergedUser.birthday
+            ? String(mergedUser.birthday).slice(0, 10)
+            : '',
+          isNotificationEnabled: mergedUser.isNotificationEnabled ?? true,
+          theme: mergedUser.theme || 'Beige'
+        };
+
+        setOriginalData(loadedData);
+        setEditData(loadedData);
       } else {
-        alert("儲存失敗，請稍後再試。");
+        alert('儲存失敗，請稍後再試。');
       }
     } catch (error) {
-      console.error("API 連線錯誤:", error);
-      alert("無法連接到伺服器！");
+      console.error('API 連線錯誤:', error);
+      alert('無法連接到伺服器！');
     }
   };
 
@@ -104,18 +161,28 @@ const ProfilePage = () => {
 
     // 3. 背景 API 儲存到資料庫
     try {
-      await fetch(`https://localhost:7247/api/user/update-settings/${userId}`, {
+      const response = await fetch(`/api/user/update-settings/${userId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify({
           isNotificationEnabled: newStatus,
-          theme: editData.theme // 舊主題
+          theme: editData.theme // 同時傳送主題，避免只更新通知狀態導致主題設定被覆蓋
         }),
       });
+    if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+      }
+
+      const currentStorage = JSON.parse(localStorage.getItem('userData') || '{}');
+      currentStorage.isNotificationEnabled = newStatus;
+      localStorage.setItem('userData', JSON.stringify(currentStorage));
     } catch (error) {
-      console.error("自動儲存失敗:", error);
-      // 如果失敗，再把開關切回來
-      setEditData({ ...editData, isNotificationEnabled: !newStatus });
+      console.error('自動儲存失敗:', error);
+      setEditData(prev => ({
+        ...prev,
+        isNotificationEnabled: !newStatus
+      }));
     }
   };
 
@@ -136,9 +203,10 @@ const ProfilePage = () => {
 
   // 4. 背景打 API 存進資料庫
   try {
-    await fetch(`https://localhost:7247/api/user/update-settings/${userId}`, {
+    const response = await fetch(`/api/user/update-settings/${userId}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
       body: JSON.stringify({
         isNotificationEnabled: editData.isNotificationEnabled,  // 舊通知狀態
         theme: newTheme // 傳送新主題
@@ -146,14 +214,41 @@ const ProfilePage = () => {
     });
     
     // 更新 localStorage 裡的 userData，這樣重新整理才不會跑掉
-    const currentStorage = JSON.parse(localStorage.getItem('userData'));
-    currentStorage.theme = newTheme;
-    localStorage.setItem('userData', JSON.stringify(currentStorage));
+    if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+      }
 
-  } catch (error) {
-    console.error("切換主題失敗", error);
-  }
+      const currentStorage = JSON.parse(localStorage.getItem('userData') || '{}');
+      currentStorage.theme = newTheme;
+      localStorage.setItem('userData', JSON.stringify(currentStorage));
+    } catch (error) {
+      console.error('切換主題失敗', error);
+    }
 };
+
+  /* ======================================== 事件：登出 =========================================== */
+  const handleLogout = async () => {
+    try {
+      const response = await fetch('/api/user/logout', {
+        method: 'POST',
+        credentials: 'include'
+      });
+
+      if (!response.ok) {
+        alert('登出失敗');
+        return;
+      }
+
+      localStorage.removeItem('userData');
+      localStorage.removeItem('currentUserId');
+      localStorage.removeItem('currentUserName');
+
+      window.location.href = '/';
+    } catch (error) {
+      console.error('登出失敗:', error);
+      alert('無法連線到伺服器');
+    }
+  };
 
   /* ======================================== 事件：帳號刪除 =========================================== */
   // 處理刪除帳號
@@ -167,14 +262,24 @@ const ProfilePage = () => {
     const finalConfirm = window.confirm("確定要永久刪除帳號嗎？此動作無法復原！");
     if (!finalConfirm) return;
     try {
-      const response = await fetch(`https://localhost:7247/api/user/delete/${userId}`, {
-        method: 'PUT'
+      const response = await fetch(`/api/user/delete/${userId}`, {
+        method: 'PUT',
+        credentials: 'include'
       });
 
       if (response.ok) {
         alert("您的帳號已刪除，將為您登出。");
+
+        try {
+          await fetch('/api/user/logout', {
+            method: 'POST',
+            credentials: 'include'
+          });
+        } catch {
+        }
+
         localStorage.clear(); // 清除所有 localStorage 資料
-        navigate('/login');
+        window.location.href = '/';
       } else {
         alert("刪除失敗，請稍後再試。");
       }
@@ -186,8 +291,6 @@ const ProfilePage = () => {
 
 
   return (
-    <MainLayout>
-
       <>
       <style>{`
         input[type="date"]::-webkit-calendar-picker-indicator {
@@ -412,7 +515,7 @@ const ProfilePage = () => {
       
       </>
 
-    </MainLayout>
+    
   );
 };
 

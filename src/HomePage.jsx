@@ -1,11 +1,9 @@
 /* ===== 導入元件 ===== */
 import React, { useState, useEffect, useRef, useCallback } from 'react'; // 時間更動元件 -> 即時更新
-import { Link, NavLink, useNavigate } from 'react-router-dom';  // 分頁元件 Link -> 取代 a 標籤，實現無刷新頁面切換。
 
 /* ===== 獨立組件 ===== */
 import InteractiveGalaxy from './InteractiveGalaxy';
 import { mockEntries } from './mockEntries';
-// import MainLayout from './MainLayout'; // 佈局
 import Icon from './Icon'; // 全域 Icon
 
 
@@ -18,14 +16,15 @@ const HomePage = () => {
   const [todayMoods, setTodayMoods] = useState([]);
 
   useEffect(() => {
-    const userData = JSON.parse(localStorage.getItem('userData') || '{}');
-    const userId = userData.id;
-    if (!userId) return;
-
-    fetch(`/api/diary/today-moods?userId=${userId}`)
-      .then(res => res.json())
-      .then(data => setTodayMoods(data.moods))
-      .catch(err => console.error('心情載入失敗', err));
+  fetch('/api/diary/today-moods', {
+    credentials: 'include'
+  })
+    .then(async res => {
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      return res.json();
+    })
+    .then(data => setTodayMoods(data.moods ?? []))
+    .catch(err => console.error('心情載入失敗', err));
   }, []);
     
 
@@ -112,14 +111,15 @@ const HomePage = () => {
   const [habits, setHabits] = useState([]);
 
   useEffect(() => {
-    const userData = JSON.parse(localStorage.getItem('userData') || '{}');
-    const userId = userData.id;
-    if (!userId) return;
-
-    fetch(`/api/task/list?userId=${userId}`)
-      .then(res => res.json())
-      .then(data => setHabits(data.tasks))
-      .catch(err => console.error('習慣載入失敗', err));
+  fetch('/api/task/list', {
+    credentials: 'include'
+  })
+    .then(async res => {
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      return res.json();
+    })
+    .then(data => setHabits(data.tasks ?? []))
+    .catch(err => console.error('習慣載入失敗', err));
   }, []);
 
   // ==========================================
@@ -135,14 +135,15 @@ const HomePage = () => {
   });
 
   useEffect(() => {
-    const userData = JSON.parse(localStorage.getItem('userData') || '{}');
-    const userId = userData.id;
-    if (!userId) return;
-
-    fetch(`/api/diary/today-summary?userId=${userId}`)
-      .then(res => res.json())
-      .then(data => setTodaySummary(data))
-      .catch(err => console.error('今日摘要載入失敗', err));
+    fetch('/api/diary/today-summary', {
+    credentials: 'include'
+  })
+    .then(async res => {
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      return res.json();
+    })
+    .then(data => setTodaySummary(data))
+    .catch(err => console.error('今日摘要載入失敗', err));
   }, []);
 
 
@@ -155,7 +156,7 @@ const [previewImage, setPreviewImage] = useState(null); // 用來裝預覽圖片
 
 // --- 處理點擊與上傳的事件 ---
 const handleDivClick = () => {
-  fileInputRef.current.click(); // 點擊美美的 div 時，觸發隱藏的 input
+  fileInputRef.current.click(); // 點擊 div 時，觸發隱藏的 input
 };
 
 const handleFileChange = async (e) => {
@@ -198,9 +199,35 @@ const handleFileChange = async (e) => {
   }
 };
 
+// ==========================================
+// 星球點擊變化
+// ==========================================
+
+const [monthDiaries, setMonthDiaries] = useState([]);
+
+useEffect(() => {
+  const now = new Date();
+  fetch(`/api/diary/month-status?year=${now.getFullYear()}&month=${now.getMonth()+1}`, 
+        { credentials: 'include' })
+    .then(r => r.json())
+    .then(data => {
+      // 在這裡決定每個 mood 對應的顏色
+      const moodColors = {
+        happy: '#FFD700', excited: '#FF6B9D', peace: '#A8E6CF',
+        angry: '#FF6B6B', anxious: '#9B59B6', lonely: '#5DADE2',
+        bless: '#F1C40F', exhausted: '#95A5A6', /* ...等 */
+      };
+      setMonthDiaries(data.map(d => ({
+        ...d,
+        color: moodColors[d.dominantMoodId] ?? '#FFFFFF'
+      })));
+    });
+}, []);
+
+
+
   return (
-    <div className="flex flex-row w-full h-full min-h-[800px] gap-6 p-4 bg-transparent">
-      {/*<MainLayout>*/}
+<div className="h-screen flex flex-col overflow-hidden font-sans bg-[#FDFBF7] bg-[linear-gradient(to_right,#e5e7eb_1px,transparent_1px),linear-gradient(to_bottom,#e5e7eb_1px,transparent_1px)] bg-[size:24px_24px] text-[var(--color-text-main)] transition-colors duration-300">    <div className="flex flex-row w-full h-full min-h-[800px] gap-6 p-4 bg-transparent">
 
         {/* ── Block 2 Habit（Left） ── */}
         <aside className="w-64 flex flex-col gap-4">
@@ -278,7 +305,7 @@ const handleFileChange = async (e) => {
               <div className="absolute bottom-4 left-0 w-full flex justify-center">
                 <button 
                   // 這裡填炯宇的 Habit page 路徑，如果有專門新增習慣的頁面，改成 '/habit/new'。
-                  onClick={() => navigate('/habit')} 
+                  onClick={() => { window.location.href = '/Task/Index'; }} 
                   className="w-8 h-8 flex items-center justify-center bg-white rounded-full shadow-sm text-[var(--mo-brown)] hover:bg-[var(--mo-olive)] hover:text-white transition-colors border border-gray-100"
                 >
                   {/* 記得確保我有把 plus 的 Icon 加進去 */}
@@ -293,7 +320,7 @@ const handleFileChange = async (e) => {
                          flex-1 flex justify-center items-center py-4 overflow-hidden relative 
                          bg-[var(--color-glaxy)] shadow-sm">            
             <div className="w-full h-full relative">
-               <InteractiveGalaxy diaries={[]} />
+              <InteractiveGalaxy diaries={monthDiaries} />
             </div>
         </main>
 
@@ -353,20 +380,26 @@ const handleFileChange = async (e) => {
             {todayMoods.length > 0 ? (
               // 有心情資料 → 顯示 emoji
               todayMoods.map(mood => (
-                <span key={mood.moodId} title={mood.moodName}
-                  className="text-xl cursor-default transition-transform hover:scale-125 duration-300">
+                <span 
+                  key={mood.moodId} 
+                  title={mood.moodName}
+                  className="text-xl cursor-default transition-transform hover:scale-125 duration-300"
+                >
                   {mood.emoji}
                 </span>
               ))
             ) : (
               // 沒有 → 顯示 6 個空圈（上限 6 種）
               Array(6).fill(null).map((_, i) => (
-                <span key={i}
+                <span
+                  key={i}
                   onClick={() => {
                     const today = new Date();
                     const dateStr = `${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,'0')}-${String(today.getDate()).padStart(2,'0')}`;
-                          navigate(`/diary/${dateStr}`); }} // 點擊空圈也可以進日記頁新增心情
-                  className="cursor-pointer transition-transform hover:scale-125 duration-300 text-gray-300 hover:text-[var(--mo-olive)]">
+                          window.location.href = `/Diary/DiaryList?date=${dateStr}`;
+                  }} // 點擊空圈也可以進日記頁新增心情
+                  className="cursor-pointer transition-transform hover:scale-125 duration-300 text-gray-300 hover:text-[var(--mo-olive)]"
+                >
                   <Icon name="circleOutline" size={20} color="currentColor" />
                 </span>
               ))
@@ -438,9 +471,8 @@ const handleFileChange = async (e) => {
 
         </aside>
 
-    {/*</MainLayout>*/}
     </div>
-    
+  </div>  
     
   );
 };
