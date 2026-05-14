@@ -6,11 +6,32 @@ import InteractiveGalaxy from './InteractiveGalaxy';
 import { mockEntries } from './mockEntries';
 import Icon from './Icon'; // 全域 Icon
 
+// =====================================================
+// 心情 → 顏色 對應表 公式在下面
+// =====================================================
+// =====================================================
+// 心情 → 顏色 對應表（已對齊資料庫 Mood 表的 12 種心情）
+// =====================================================
+const MOOD_COLORS = {
+  // ─ 正向心情 ─
+  happy:    '#FFD700',   // 開心 😊 金黃
+  excited:  '#FF6B9D',   // 興奮 🤩 粉紅
+  joyful:   '#FFA94D',   // 愉快 😄 橘黃
+  calm:     '#A8E6CF',   // 平靜 😌 薄荷綠
+  relaxed:  '#B5EAD7',   // 放鬆 ☺️ 淡綠
+  touched:  '#FFB6C1',   // 感動 😭 粉色
+  // ─ 負向心情 ─
+  angry:    '#FF6B6B',   // 生氣 😠 紅色
+  anxious:  '#9B59B6',   // 焦慮 😰 紫色
+  troubled: '#8E44AD',   // 煩惱 😣 深紫
+  sad:      '#5DADE2',   // 難過 😢 藍色
+  tired:    '#95A5A6',   // 疲憊 😴 灰色
+  lonely:   '#70B2D9',   // 孤單 🥺 淡藍
+};
 
+const NEUTRAL_COLOR = '#F9F9F9';  // 純文字日記用
 
 const HomePage = () => {
-  /* ===== 跳頁實現 ===== */
-  const navigate = useNavigate();
     
   /* ===== 心情表達邏輯 ===== */
   const [todayMoods, setTodayMoods] = useState([]);
@@ -146,6 +167,55 @@ const HomePage = () => {
     .catch(err => console.error('今日摘要載入失敗', err));
   }, []);
 
+// =====================================================
+// 載入本月的日記狀態（給星系上色用）
+// =====================================================
+const [monthDiaries, setMonthDiaries] = useState([]);
+useEffect(() => {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = now.getMonth() + 1;   // JS getMonth() 從 0 開始，要 +1
+
+  fetch(`/api/diary/month-status?year=${year}&month=${month}`, {
+    credentials: 'include'             // 帶上 Session Cookie，後端才認得是誰
+  })
+    .then(res => {
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      return res.json();
+    })
+    .then(data => {
+      // 把 API 格式（YYYY-MM-DD）轉成 InteractiveGalaxy 用的格式（"YYYY / MM / DD"）
+      // 並決定每筆的顏色
+      const formatted = data
+        .filter(item => item.hasDiary)               // 只留有寫的天
+        .map(item => {
+          const [y, m, d] = item.date.split('-');
+          const galaxyDate = `${y} / ${m} / ${d}`;   // 配合 InteractiveGalaxy 的日期格式
+
+          // 決定顏色：有 moodId 就查表、沒 moodId（純文字）用中性色
+          const color = item.moodId
+            ? (MOOD_COLORS[item.moodId] ?? NEUTRAL_COLOR)
+            : NEUTRAL_COLOR;
+
+          return {
+            date: galaxyDate,                         // 給 InteractiveGalaxy 比對日期用
+            diaryId: item.diaryId,                    // 等下階段 5 跳轉會用到
+            color: color,                             // 星球顏色
+            title: item.moodEmoji,                    // hover 卡片顯示 emoji
+            previewText: item.previewText,            // hover 卡片顯示預覽文字
+            content: item.previewText,                // 同上，配合 DiaryCard 結構
+            moodId: item.moodId,
+          };
+        });
+
+      setMonthDiaries(formatted);
+    })
+    .catch(err => {
+      console.error('載入本月日記狀態失敗', err);
+    });
+}, []);  // [] 表示只在元件第一次渲染時跑一次
+
+
 
 
 // ==========================================
@@ -198,31 +268,6 @@ const handleFileChange = async (e) => {
     console.error("連線異常:", error);
   }
 };
-
-// ==========================================
-// 星球點擊變化
-// ==========================================
-
-const [monthDiaries, setMonthDiaries] = useState([]);
-
-useEffect(() => {
-  const now = new Date();
-  fetch(`/api/diary/month-status?year=${now.getFullYear()}&month=${now.getMonth()+1}`, 
-        { credentials: 'include' })
-    .then(r => r.json())
-    .then(data => {
-      // 在這裡決定每個 mood 對應的顏色
-      const moodColors = {
-        happy: '#FFD700', excited: '#FF6B9D', peace: '#A8E6CF',
-        angry: '#FF6B6B', anxious: '#9B59B6', lonely: '#5DADE2',
-        bless: '#F1C40F', exhausted: '#95A5A6', /* ...等 */
-      };
-      setMonthDiaries(data.map(d => ({
-        ...d,
-        color: moodColors[d.dominantMoodId] ?? '#FFFFFF'
-      })));
-    });
-}, []);
 
 
 
