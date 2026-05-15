@@ -8,7 +8,6 @@ export default defineConfig({
   server: {
     proxy: {
       '/api': {
-        // ⚠️ 注意：組員的版本是 7247，但您後端實際跑在 7148
         target: 'https://localhost:7148',
         changeOrigin: true,
         secure: false,
@@ -17,11 +16,22 @@ export default defineConfig({
   },
 
   build: {
+    // ✨ 改動 1：直接 build 進 wwwroot，省去手動複製
+    outDir: '../DiaryProject/DiaryProject/wwwroot/entry',
+    emptyOutDir: true,
+
     rollupOptions: {
       input: {
-        entry:     resolve(__dirname, 'index.html'),       // 登入歡迎頁 (Welcome.cshtml 用)
-        fronthome: resolve(__dirname, 'front-home.html'),  // 首頁 HomePage (Index.cshtml 用)
-        profile:   resolve(__dirname, 'profile.html')      // 個人檔案頁 (Profile.cshtml 用)
+        entry:     resolve(__dirname, 'index.html'),
+        fronthome: resolve(__dirname, 'front-home.html'),
+        profile:   resolve(__dirname, 'profile.html')
+      },
+
+      // ✨ 改動 2：固定檔名，永不變
+      output: {
+        entryFileNames: 'assets/[name].js',
+        chunkFileNames: 'assets/[name].js',
+        assetFileNames: 'assets/[name][extname]'
       }
     }
   }

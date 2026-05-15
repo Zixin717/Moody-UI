@@ -349,13 +349,13 @@ const ProfilePage = () => {
                   {/* Password (靜態顯示，點擊跳轉) */}
                   <div>
                     <span className="block text-sm font-bold text-[var(--mo-brown-80)] mb-2">Password</span>
-                    <Link to="/verify" className="flex items-center justify-between bg-white border border-moBlack rounded-xl px-4 py-3 hover:border-moAzure transition-colors group cursor-pointer">
+                    <a href="/Entry/Verify" className="flex items-center justify-between bg-white border border-moBlack rounded-xl px-4 py-3 hover:border-moAzure transition-colors group cursor-pointer">
                       <div className="flex items-center gap-3">
                         <div className="text-[var(--mo-olive)]"><Icon name="sparkle" size={20} color="currentColor" /></div>
                         <span className="text-gray-700 tracking-widest mt-1">********</span>
                       </div>
                       <span className="text-sm font-bold text-gray-400 group-hover:text-moAzure transition-colors">Edit</span>
-                    </Link>
+                    </a>
                   </div>
 
                   {/* Phone */}

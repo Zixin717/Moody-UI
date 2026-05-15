@@ -3838,7 +3838,7 @@ const PersonalProfilePage = () => {
       
       {/* 臨時的返回首頁按鈕，方便我測試跳轉 */}
       <div className="absolute top-6 left-8">
-        <Link to="/home" className="text-[30px] text-moBlack font-bold font-serif hover:text-moAzure transition-colors">Moody</Link>
+        <a href="/FrontPage/Index" className="text-[30px] text-moBlack font-bold font-serif hover:text-moAzure transition-colors">Moody</a>
       </div>
 
       <main className="flex-1 flex justify-center py-4 overflow-y-auto">
@@ -5086,7 +5086,7 @@ import ForgotPassword from './ForgotPassword';  // 忘記密碼頁
 import VerifyPage from './VerifyPage';          // 修改密碼的驗證頁
 
 
-import HomePage from './HomePage';              // 首頁
+import HomePage from './FrontPage/Index';              // 首頁
 import ProfilePage from './ProfilePage';        // 系統資料頁
 import PersonalProfilePage from './PersonalProfilePage'; // 個人資料頁 (細部)
 
@@ -5115,7 +5115,7 @@ function App() {
       <Route path="/verify" element={<VerifyPage />} />
       
       {/* HomePage (首頁) */}
-      <Route path="/home" element={<HomePage />} />
+      <Route path="/FrontPage/Index" element={<HomePage />} />
       
       {/* ProfilePage (個人資料頁) */}
       <Route path="/profile" element={<ProfilePage />} />
@@ -5157,7 +5157,7 @@ function App() {
         <div className="h-screen flex flex-col items-center justify-center bg-moCream text-moBrown">
           <h1 className="text-4xl font-bold mb-4">404</h1>
           <p className="mb-4">哎呀！總機找不到這個頁面哦！</p>
-          <a href="/home" className="px-6 py-2 bg-moOlive text-white rounded-full">帶我回大廳</a>
+          <a href="/FrontPage/Index" className="px-6 py-2 bg-moOlive text-white rounded-full">帶我回大廳</a>
         </div>
       } />
 
@@ -5627,7 +5627,7 @@ const VerifyPage = () => {
       <div className="min-h-screen bg-[#FDFBF7] bg-[linear-gradient(to_right,#e5e7eb_1px,transparent_1px),linear-gradient(to_bottom,#e5e7eb_1px,transparent_1px)] bg-[size:24px_24px] flex flex-col items-center justify-center font-sans">
         
         <div className="absolute top-6 left-8">
-          <Link to="/home" className="text-[30px] text-var(--mo-black) font-bold font-serif hover:text-[var(--mo-azure)] transition">Moody</Link>
+          <a href="/FrontPage/Index" className="text-[30px] text-var(--mo-black) font-bold font-serif hover:text-[var(--mo-azure)] transition">Moody</a>
         </div>
 
         <div className="bg-white border border-moBlack rounded-[2.5rem] p-12 flex flex-col items-center shadow-md w-[450px] min-h-[450px] transition-all duration-300">
@@ -6519,9 +6519,9 @@ VerifyPage.jsx
       {/* <header className="relative z-50 bg-moOlive border-b border-moBlack text-white flex items-center justify-between px-8 py-4 mb-3 flex-shrink-0"> */}
         
         {/* Logo */}
-        {/* <Link to="/home" className="text-[30px] text-moBlack font-bold font-serif cursor-pointer hover:text-moCitron transition-colors">
+        {/* <a href="/FrontPage/Index" className="text-[30px] text-moBlack font-bold font-serif cursor-pointer hover:text-moCitron transition-colors">
           Moody
-        </Link> */}
+        </a> */}
 
         {/* 搜尋列 */}
         {/* <div className="relative">
@@ -6778,7 +6778,7 @@ const MainLayout = ({ children }) => {
 
                 {/* ===== 1. 頂層導覽列 (TopBar) ===== */}
                 <header className="relative z-45 bg-[var(--color-topbar)] border-b border-moBlack text-white flex items-center justify-between px-8 py-4 mb-3 flex-shrink-0">
-                    <Link to="/home" className="text-[30px] text-moBlack font-bold font-serif cursor-pointer hover:text-moCitron transition-colors">Moody</Link>
+                    <a href="/FrontPage/Index" className="text-[30px] text-moBlack font-bold font-serif cursor-pointer hover:text-moCitron transition-colors">Moody</a>
                     
                    
 

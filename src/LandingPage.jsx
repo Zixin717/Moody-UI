@@ -1,22 +1,13 @@
 import React from 'react';
-// 1. 引入 useNavigate
-import { useNavigate } from 'react-router-dom';
+
 
 const LandingPage = () => {
-  // 2. 呼叫 useNavigate 來取得導航功能
-  const navigate = useNavigate();
 
-  // 3. 點擊 Login 按鈕後會執行的動作
-  const handleLogin = () => {
-    // Result -> 帶用戶帶去 /login 頁面
-    navigate('/login');
-  };
+  // 點擊 Login 按鈕後會執行的動作
+  const handleLogin = () => window.location.href = '/Entry/Login';
+  // 點擊 Join us 按鈕後會執行的動作
+  const handleJoin = () => window.location.href = '/Entry/Register';
 
-  // 4. 點擊 Join us 按鈕後會執行的動作
-  const handleJoin = () => {
-    // Result -> 帶用戶帶去 /register 頁面
-    navigate('/register');
-  };
 
 
   return (
