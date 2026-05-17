@@ -11,19 +11,19 @@ import Icon from './Icon'; // 全域 Icon
 // =====================================================
 const MOOD_COLORS = {
   // ─ 正向心情 ─
-  happy:    '#FFD700',   // 開心 😊 金黃
-  excited:  '#FF6B9D',   // 興奮 🤩 粉紅
-  joyful:   '#FFA94D',   // 愉快 😄 橘黃
-  calm:     '#A8E6CF',   // 平靜 😌 薄荷綠
-  relaxed:  '#B5EAD7',   // 放鬆 ☺️ 淡綠
-  touched:  '#FFB6C1',   // 感動 😭 粉色
+  happy:    '#FFD700',   // 開心
+  excited:  '#FF6B9D',   // 興奮
+  joyful:   '#FFA94D',   // 愉快
+  calm:     '#A8E6CF',   // 平靜
+  relaxed:  '#B5EAD7',   // 放鬆
+  touched:  '#FFB6C1',   // 感動
   // ─ 負向心情 ─
-  angry:    '#FF6B6B',   // 生氣 😠 紅色
-  anxious:  '#9B59B6',   // 焦慮 😰 紫色
-  troubled: '#8E44AD',   // 煩惱 😣 深紫
-  sad:      '#5DADE2',   // 難過 😢 藍色
-  tired:    '#95A5A6',   // 疲憊 😴 灰色
-  lonely:   '#70B2D9',   // 孤單 🥺 淡藍
+  angry:    '#FF6B6B',   // 生氣
+  anxious:  '#9B59B6',   // 焦慮
+  troubled: '#8E44AD',   // 煩惱
+  sad:      '#5DADE2',   // 難過
+  tired:    '#95A5A6',   // 疲憊
+  lonely:   '#70B2D9',   // 孤單
 };
 
 const NEUTRAL_COLOR = '#F9F9F9';  // 純文字日記用
@@ -195,12 +195,12 @@ useEffect(() => {
             : NEUTRAL_COLOR;
 
           return {
-            date: galaxyDate,                         // 給 InteractiveGalaxy 比對日期用
-            diaryId: item.diaryId,                    // 等下階段 5 跳轉會用到
+            date: galaxyDate,                         // InteractiveGalaxy 比對日期用
+            diaryId: item.diaryId,                    // hover 卡片連結到正確的日記頁面
             color: color,                             // 星球顏色
-            title: item.moodEmoji,                    // hover 卡片顯示 emoji
-            previewText: item.previewText,            // hover 卡片顯示預覽文字
-            content: item.previewText,                // 同上，配合 DiaryCard 結構
+            title: item.title || '未命名',            // hover 卡片顯示 emoji
+            previewText: item.previewText,           // hover 卡片顯示預覽文字
+            content: item.previewText,               // 同上，配合 DiaryCard 結構
             moodId: item.moodId,
           };
         });
@@ -242,10 +242,11 @@ useEffect(() => {
 
 
   return (
-<div className="h-screen flex flex-col overflow-hidden font-sans bg-[#FDFBF7] bg-[linear-gradient(to_right,#e5e7eb_1px,transparent_1px),linear-gradient(to_bottom,#e5e7eb_1px,transparent_1px)] bg-[size:24px_24px] text-[var(--color-text-main)] transition-colors duration-300">    <div className="flex flex-row w-full h-full min-h-[800px] gap-6 p-4 bg-transparent">
+<div className="h-full flex flex-col overflow-hidden font-sans bg-[#FDFBF7] bg-[linear-gradient(to_right,#e5e7eb_1px,transparent_1px),linear-gradient(to_bottom,#e5e7eb_1px,transparent_1px)] bg-[size:24px_24px] text-[var(--color-text-main)] transition-colors duration-300">
+  <div className="flex flex-row w-full h-full gap-6 p-4 bg-transparent overflow-hidden">
 
         {/* ── Block 2 Habit（Left） ── */}
-        <aside className="w-64 flex flex-col gap-4">
+        <aside className="w-64 flex flex-col gap-4 overflow-y-auto">
           
             {/* 時間方塊 */}
             <div className="bg-moOlive rounded-3xl p-5 shadow-sm border border-moBlack flex flex-col justify-center">
@@ -290,11 +291,11 @@ useEffect(() => {
                 <div className="absolute w-2 h-2 bg-[var(--mo-brown)] rounded-full z-10 shadow-sm" />
             </div>
 
-            {/* Habit */}
+            {/* Task */}
             <div className="flex-1 bg-[var(--mo-cream)] rounded-[2rem] p-6 flex flex-col shadow-sm border border-[var(--mo-black)] relative">
-              <h3 className="text-3xl font-bold font-serif text-[var(--mo-black)] mb-1">Habit</h3>
+              <h3 className="text-3xl font-bold font-serif text-[var(--mo-black)] mb-1">Task</h3>
 
-              {/* Habit 清單 */}
+              {/* Task 清單 */}
               <ul className="space-y-3 flex-1">
                 {habits.length > 0 ? (
                   habits.map(habit => (
@@ -340,7 +341,7 @@ useEffect(() => {
         </main>
 
         {/* ── Block 4 Today（Right） ── */}
-        <aside className="w-[250px] flex flex-col gap-4"> 
+        <aside className="w-[250px] flex flex-col gap-4 overflow-y-auto"> 
 
         {/* 4-1 今日狀態 */}
         <div className="flex-1 bg-[var(--mo-cream)] rounded-[2rem] border border-[var(--mo-black)] p-6 shadow-sm flex flex-col">

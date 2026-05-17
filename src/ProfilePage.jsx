@@ -5,13 +5,24 @@ import Icon from './Icon';             // 全域 Icon
 const ProfilePage = () => {
   /* ======================================== 事件：收折與狀態 =========================================== */
   const [openMenu, setOpenMenu] = useState(null);
-  const [openSections, setOpenSections] = useState({ account: true, setting: false, delete: false });
+  const [openSections, setOpenSections] = useState(() => {
+    const hash = window.location.hash.replace('#', '');
+    return {
+        account: hash === 'account' || hash === '',  // 沒指定 hash 預設展開 account
+        setting: hash === 'setting',
+        delete: hash === 'delete',
+    };
+});
   const [isDeleteConfirmed, setIsDeleteConfirmed] = useState(false);
   
   
   const toggleSection = (section) => {
-    setOpenSections(prev => ({ ...prev, [section]: !prev[section] }));
-  };
+    setOpenSections(prev => ({
+        account: section === 'account' ? !prev.account : false,   // 點誰開誰，其他收起
+        setting: section === 'setting' ? !prev.setting : false,
+        delete: section === 'delete' ? !prev.delete : false,
+    }));
+};
   // 1. 用戶 ID
   const [userId, setUserId] = useState(null);
 
@@ -293,6 +304,7 @@ const ProfilePage = () => {
   return (
       <>
       <style>{`
+        /* 既有的 date input fix */
         input[type="date"]::-webkit-calendar-picker-indicator {
           opacity: 0;
           position: absolute;
@@ -301,10 +313,21 @@ const ProfilePage = () => {
           height: 100%;
           cursor: pointer;
         }
+
+        /* 覆寫 components.css 全域 input 樣式（避免 MVC CSS 污染 React 的 input） */
+        .profile-page-react input,
+        .profile-page-react select,
+        .profile-page-react textarea {
+          border: 0 !important;
+          border-radius: 0 !important;
+          padding: 0 !important;
+          background: transparent !important;
+          color: inherit !important;
+        }
       `}</style>
     
         {/* 帳戶設定主內容 */}
-        <main className="flex-1 flex justify-center py-4 overflow-y-auto">
+        <main className="flex-1 flex justify-center py-4 overflow-y-auto profile-page-react">
           <div className="w-full max-w-3xl flex flex-col gap-4">
             
             {/* ── 1. Account 區塊 ── */}
@@ -405,7 +428,7 @@ const ProfilePage = () => {
             </div>
 
             {/* ── 2. Setting 區塊 ── */}
-            <div className="bg-[var(--mo-cream)] border border-moBlack rounded-[2rem] p-8 shadow-sm transition-all duration-300">
+            <div role="button" className="bg-[var(--mo-cream)] border border-moBlack rounded-[2rem] p-8 shadow-sm transition-all duration-300">
               <div className="flex justify-between items-center cursor-pointer mb-6" onClick={() => toggleSection('setting')}>
                 <h2 className="text-xl font-bold font-serif text-[var(--mo-brown)]">Setting</h2>
                 <button className="text-[var(--mo-brown)]/60 hover:text-[var(--mo-azure)] transition-colors">
@@ -417,6 +440,7 @@ const ProfilePage = () => {
                 <div className="flex flex-col gap-6 pt-4">                  
                  {/* 通知切換 (切換按鈕) */}
                   <div 
+                    role="button"
                     className="relative flex items-center justify-between bg-white border border-moBlack rounded-xl px-5 py-4 cursor-pointer hover:border-moAzure transition-colors"
                     onClick={handleToggleNotification}
                   >
@@ -481,19 +505,35 @@ const ProfilePage = () => {
                   </div>
 
                    {/* 確認 Checkbox */}
-                  <label className="flex items-center gap-3 cursor-pointer group mt-4"
-                    onClick={()=> setIsDeleteConfirmed(!isDeleteConfirmed)}
+                  {/* 確認 Checkbox */}
+                  <label 
+                    role="button"
+                    className="flex items-center gap-3 cursor-pointer group mt-4 select-none"
+                    onClick={(e) => {
+                      e.preventDefault();   // 避免 label 預設的「跳到關聯 input」行為
+                      setIsDeleteConfirmed(!isDeleteConfirmed);
+                    }}
                   >
-                    <div className={`w-5 h-5 
-                                      border-2 rounded-md 
-                                      flex items-center justify-center 
-                                      transition-colors 
-                                      ${isDeleteConfirmed ? 
-                                      'border-red-500 bg-red-500' : 'border-red-300 group-hover:border-red-500'}`}>
-                      {/* 如果選中，這裡可以加一個Icon check */}
-                      <div className="w-3 h-3 bg-red-400 rounded-sm opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                    <div className={
+                      `w-5 h-5 border-2 rounded-md 
+                      flex items-center justify-center 
+                      transition-colors 
+                      ${isDeleteConfirmed 
+                        ? 'border-red-500 bg-red-500' 
+                        : 'border-red-300 bg-white group-hover:border-red-500'
+                      }`}
+                    >
+                      {/* 勾選時顯示白色 ✓，未勾選時整個不渲染 */}
+                      {isDeleteConfirmed && (
+                        <svg viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" 
+                            className="w-3 h-3">
+                          <polyline points="20 6 9 17 4 12" />
+                        </svg>
+                      )}
                     </div>
-                    <span className="text-sm font-medium text-red-500 group-hover:text-red-700">我已閱讀警告，並確認要刪除帳號。</span>
+                    <span className="text-sm font-medium text-red-500 group-hover:text-red-700">
+                      我已閱讀警告，並確認要刪除帳號。
+                    </span>
                   </label>
 
                   {/* 下方 Delete 按鈕 */}

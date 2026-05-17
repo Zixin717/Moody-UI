@@ -28,7 +28,7 @@ const ForgotPassword = () => {
     }
 
     try {
-      const response = await fetch('https://localhost:7247/api/user/forgot-password', {
+      const response = await fetch('/api/user/forgot-password', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: email })
@@ -71,7 +71,7 @@ const ForgotPassword = () => {
     }
 
     try {
-      const response = await fetch('https://localhost:7247/api/user/verify-reset-code', {
+      const response = await fetch('/api/user/verify-reset-code', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: email, code: fullCode })
@@ -100,7 +100,7 @@ const ForgotPassword = () => {
     const fullCode = codeArray.join('');
 
     try {
-      const response = await fetch('https://localhost:7247/api/user/reset-password', {
+      const response = await fetch('/api/user/reset-password', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
@@ -112,7 +112,7 @@ const ForgotPassword = () => {
 
       if (response.ok) {
         alert("密碼修改成功！請使用新密碼重新登入。");
-        navigate('/login');
+        navigate('/Entry/Login');
       } else {
         setErrorMsg("重設失敗，可能驗證已超時，請重新操作。");
       }
@@ -159,9 +159,6 @@ const ForgotPassword = () => {
                     onChange={(e) => setEmail(e.target.value)}
                     className="w-full bg-transparent outline-none text-sm text-gray-700" 
                   />
-                </div>
-                <div className="text-right">
-                  <a href="#" className="text-xs font-bold text-gray-500 hover:text-moOlive transition-colors">其他方式？</a>
                 </div>
               </div>
 

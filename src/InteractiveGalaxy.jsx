@@ -42,17 +42,33 @@ const DiaryCard = ({ entry, pos, onClick }) => {
       onClick={onClick}
       className="cursor-pointer"
     >
-      <div className="bg-white/95 backdrop-blur-md p-4 rounded-2xl border border-[var(--mo-brown-80)] shadow-xl w-[220px] animate-fade-in-up hover:bg-[var(--mo-cream)] transition-colors">
-        <div className="flex justify-between items-center mb-1">
-          <div className="flex items-center gap-2">
-            <span className="text-[12px] text-gray-500 font-serif"> {entry.date} {/* 只顯示日期 */}</span>
-            <h4>{entry.title ?? '點擊查看'}</h4>
-            <p className="text-xs">{entry.previewText ?? ''}</p>
-          </div>
-          <LocalIcon name="arrowUpRight" size={14} color="#9ca3af" />
+      <div className="bg-white/95 backdrop-blur-md p-4 rounded-2xl border border-[var(--mo-brown-80)] shadow-xl w-[220px] animate-fade-in-up hover:bg-[var(--mo-cream)] transition-colors group cursor-pointer text-left">
+  
+        {/* 頂部列：日期 與 右上角箭頭 (向兩側推開) */}
+        <div className="flex justify-between items-start mb-2">
+          <span className="text-[12px] text-gray-500 font-serif leading-none">
+            {entry.date}
+          </span>
+          {/* 加了 group-hover，滑鼠碰到卡片時箭頭會變色，增加互動感！ */}
+          <LocalIcon name="arrowUpRight" size={14} className="text-gray-400 group-hover:text-[var(--mo-black)] transition-colors" />
         </div>
-        <h4 className="text-md text-[var(--mo-black)] mb-1 font-serif">{entry.title}</h4>
-        <p className="text-xs text-[var(--mo-brown-80)] truncate">{entry.content}</p>
+
+        {/* 內容區塊：靠左對齊，保持閱讀舒適度 */}
+        <div className="flex flex-col gap-1">
+          
+          {/* 標題：最多顯示 1 行，超出的變成 ... */}
+          <h4 className="text-md text-[var(--mo-black)] font-bold font-serif line-clamp-1">
+            {entry.title ?? '點擊查看'}
+          </h4>
+          
+          {/* 內文預覽：最多顯示 2 行，超出的變成 ... */}
+          <p className="text-xs text-[var(--mo-brown-80)] line-clamp-2 leading-relaxed">
+            {/* 優先顯示預覽文字，如果沒有就顯示內文，再沒有就顯示預設文字 */}
+            {entry.previewText || entry.content || '尚未輸入內容'}
+          </p>
+
+        </div>
+
       </div>
     </div>,
     document.body   // ← 卡片掛在這裡，脫離所有 3D 容器

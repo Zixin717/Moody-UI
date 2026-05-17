@@ -41,7 +41,7 @@ const RegisterPage = () => {
 
       if (response.ok) {
         alert("註冊成功！請重新登入！");
-        navigate('/login');
+        navigate('/Entry/Login');
       } else {
         const errorData = await response.text();
         alert("註冊失敗：" + errorData);
@@ -118,7 +118,7 @@ const RegisterPage = () => {
 
           {/* 登入切換 */}
           <p className="mt-6 text-sm text-gray-500">
-            Already have an account? <Link to="/login" className="text-moOlive font-bold hover:underline">Log in</Link>
+            Already have an account? <Link to="/Entry/Login" className="text-moOlive font-bold hover:underline">Log in</Link>
           </p>
         </div>
       </div>

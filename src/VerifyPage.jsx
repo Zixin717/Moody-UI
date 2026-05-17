@@ -73,8 +73,7 @@ const VerifyPage = () => {
 
       if (response.ok) {
         alert("密碼修改成功！請重新登入。");
-        //  改用 window.location 跳到組員的登入頁
-        window.location.href = '/Entry/Welcome';
+        window.location.href = '/Entry/Login';
       } else {
         setErrorMsg("密碼修改失敗，請稍後再試。");
       }
