@@ -12,7 +12,24 @@ const ProfilePage = () => {
         setting: hash === 'setting',
         delete: hash === 'delete',
     };
-});
+  });
+  // 監聽 URL hash 變化（讓下拉選單在同頁點擊也能切換欄位）
+  useEffect(() => {
+    const applyHashSection = () => {
+      const hash = window.location.hash.replace('#', '');
+      if (['account', 'setting', 'delete'].includes(hash)) {
+        setOpenSections({
+          account: hash === 'account',
+          setting: hash === 'setting',
+          delete: hash === 'delete',
+        });
+      }
+    };
+
+    applyHashSection(); // 初次載入跑一次（從別頁進來時）
+    window.addEventListener('hashchange', applyHashSection);
+    return () => window.removeEventListener('hashchange', applyHashSection);
+  }, []);
   const [isDeleteConfirmed, setIsDeleteConfirmed] = useState(false);
   
   
@@ -459,19 +476,21 @@ const ProfilePage = () => {
                   </div>
 
                   {/* 主題切換 (切換按鈕) */}
-                  <div className="relative flex items-center justify-between bg-white border border-moBlack rounded-xl px-5 py-4 cursor-pointer hover:border-moAzure transition-colors" 
-                       onClick={handleToggleTheme} //綁定事件
-                  >
-                    <div className="flex items-center gap-4">
+                  {false && (
+                    <div 
+                      className="relative flex items-center justify-between bg-white border border-moBlack rounded-xl px-5 py-4 cursor-pointer hover:border-moAzure transition-colors" 
+                      onClick={handleToggleTheme} //綁定事件
+                    >
+                      <div className="flex items-center gap-4">
                         <div className="text-[var(--mo-olive)]"><Icon name="moon" size={20} color="currentColor" /></div>
                         <span className="text-sm font-bold text-[var(--mo-brown-80)]">Theme</span>
                         <span className="text-xs text-gray-400 font-bold ml-2">{editData.theme}</span>
                       </div>
-                      {/* 動態開關 */}
                       <div className={`w-12 h-6 rounded-full p-1 flex items-center border border-moBlack shadow-inner transition-colors duration-300 ${editData.theme === 'Dark' ? 'bg-[var(--mo-olive)] justify-end' : 'bg-[var(--mo-brown-80)] justify-start'}`}>
                         <div className="w-4 h-4 rounded-full bg-white shadow"></div>
                       </div>
                     </div>
+                  )}
 
                   
 

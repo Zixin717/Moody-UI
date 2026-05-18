@@ -301,7 +301,11 @@ useEffect(() => {
                   habits.map(habit => (
                     <li key={habit.taskId}
                       className="flex items-center gap-3 text-sm font-medium text-[var(--mo-brown)]">
-                      <Icon name="square" size={18} color="var(--mo-olive)" />
+                      <Icon 
+                        name={habit.isCompletedToday ? "checkSquare" : "square"}   // 條件渲染
+                        size={18} 
+                        color={habit.isCompletedToday ? "var(--mo-olive)" : "var(--mo-brown-20)"}
+                      />
                       {habit.title}
                       {/* 顯示頻率標籤 */}
                       <span className="ml-auto text-[10px] text-[var(--mo-brown)]/40 font-normal">
