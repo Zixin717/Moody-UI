@@ -27,6 +27,14 @@ const Icon = ({ name, size = 20, color = "currentColor" }) => {
     check: <polyline points="20 6 9 17 4 12" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>,
     square: <rect x="3" y="3" width="18" height="18" rx="3" fill="none" stroke={color} strokeWidth="1.5"/>,
     circleOutline: <circle cx="12" cy="12" r="8" fill="none" stroke={color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>,
+    checkSquare: (
+      <>
+        <rect x="3" y="3" width="18" height="18" rx="2" 
+              fill="none" stroke={color} strokeWidth="2"/>
+        <polyline points="9 12 11 14 16 9" 
+                  fill="none" stroke={color} strokeWidth="2" strokeLinecap="round"/>
+      </>
+    ),
 
     // 音樂播放器
     play: <polygon points="5 3 19 12 5 21 5 3" fill={color} />,
